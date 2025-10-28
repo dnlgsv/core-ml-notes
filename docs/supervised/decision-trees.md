@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Decision Trees
-permalink: /supervised/decision-trees/
-category: supervised
+parent: Supervised Learning
+nav_order: 3
 ---
 
 # Decision Trees

@@ -1,7 +1,8 @@
 ---
-layout: page
+layout: default
 title: About This Guide
-permalink: /introduction/about/
+parent: Introduction
+nav_order: 1
 ---
 
 # About This Guide

@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Recurrent Neural Networks
-permalink: /deep-learning/rnn/
-category: deep-learning
+parent: Deep Learning
+nav_order: 3
 ---
 
 # Recurrent Neural Networks

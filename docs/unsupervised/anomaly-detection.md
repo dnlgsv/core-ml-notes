@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Anomaly Detection
-permalink: /unsupervised/anomaly-detection/
-category: unsupervised
+parent: Unsupervised Learning
+nav_order: 3
 ---
 
 # Anomaly Detection

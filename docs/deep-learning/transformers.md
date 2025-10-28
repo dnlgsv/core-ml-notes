@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Transformers
-permalink: /deep-learning/transformers/
-category: deep-learning
+parent: Deep Learning
+nav_order: 4
 ---
 
 # Transformers

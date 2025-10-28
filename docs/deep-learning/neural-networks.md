@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Neural Networks Basics
-permalink: /deep-learning/neural-networks/
-category: deep-learning
+parent: Deep Learning
+nav_order: 1
 ---
 
 # Neural Networks Basics

@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Dimensionality Reduction
-permalink: /unsupervised/dimensionality-reduction/
-category: unsupervised
+parent: Unsupervised Learning
+nav_order: 2
 ---
 
 # Dimensionality Reduction

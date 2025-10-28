@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Support Vector Machines
-permalink: /supervised/svm/
-category: supervised
+parent: Supervised Learning
+nav_order: 4
 ---
 
 # Support Vector Machines

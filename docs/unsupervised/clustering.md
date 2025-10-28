@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Clustering
-permalink: /unsupervised/clustering/
-category: unsupervised
+parent: Unsupervised Learning
+nav_order: 1
 ---
 
 # Clustering

@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Logistic Regression
-permalink: /supervised/logistic-regression/
-category: supervised
+parent: Supervised Learning
+nav_order: 2
 ---
 
 # Logistic Regression

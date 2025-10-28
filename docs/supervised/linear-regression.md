@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Linear Regression
-permalink: /supervised/linear-regression/
-category: supervised
+parent: Supervised Learning
+nav_order: 1
 ---
 
 # Linear Regression

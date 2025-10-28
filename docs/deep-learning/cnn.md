@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: default
 title: Convolutional Neural Networks
-permalink: /deep-learning/cnn/
-category: deep-learning
+parent: Deep Learning
+nav_order: 2
 ---
 
 # Convolutional Neural Networks

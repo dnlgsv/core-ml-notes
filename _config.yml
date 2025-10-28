@@ -10,8 +10,12 @@ repository: dnlgsv/core-ml-notes
 github:
   url: https://github.com/dnlgsv/core-ml-notes
 
-# Theme (using remote_theme for GitHub Pages compatibility)
-remote_theme: pages-themes/cayman@v0.2.0
+# Theme - just-the-docs is perfect for documentation sites
+remote_theme: just-the-docs/just-the-docs@v0.7.0
+
+# Just the Docs theme settings
+color_scheme: light
+search_enabled: true
 
 # Markdown processor
 markdown: kramdown
@@ -38,9 +42,8 @@ collections:
 defaults:
   - scope:
       path: ""
-      type: "docs"
     values:
-      layout: page
+      layout: default
   - scope:
       path: "_posts"
     values:
@@ -55,6 +58,8 @@ exclude:
   - COMPLETION_CHECKLIST.md
   - STYLING_SUMMARY.md
   - README.md.bak
+  - Gemfile
+  - Gemfile.lock
 
 # Assets
 sass:
