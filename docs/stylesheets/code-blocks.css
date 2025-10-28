@@ -1,0 +1,222 @@
+/* ============================================================================
+   Enhanced Code Block Styling
+   ============================================================================ */
+
+/* Code block wrapper */
+pre {
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+/* Code label (language indicator) */
+.code-label {
+  position: absolute;
+  top: -1.5rem;
+  right: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  background-color: transparent;
+  padding: 0.25rem 0;
+}
+
+[data-md-color-scheme="dark"] .code-label {
+  color: #999;
+}
+
+/* Copy button styling */
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #333;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+[data-md-color-scheme="dark"] .copy-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f0f0f0;
+}
+
+.copy-button:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-md-color-scheme="dark"] .copy-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.copy-button:active {
+  transform: scale(0.95);
+}
+
+/* Active/clicked state */
+.copy-button.copied {
+  background-color: #2ca02c;
+  border-color: #2ca02c;
+  color: white;
+}
+
+/* ============================================================================
+   Inline Code Styling
+   ============================================================================ */
+
+code {
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* Line numbers (if enabled) */
+.highlight {
+  background-color: transparent;
+}
+
+.highlight table {
+  width: 100%;
+}
+
+.highlight table td {
+  padding: 0;
+  border: none;
+}
+
+/* ============================================================================
+   Math Block Styling (KaTeX)
+   ============================================================================ */
+
+.arithmatex {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.arithmatex.block-display {
+  display: block;
+  text-align: center;
+}
+
+.arithmatex.inline {
+  display: inline;
+}
+
+/* KaTeX error styling */
+.katex-error {
+  color: #d62728;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9em;
+  padding: 0.25rem 0.5rem;
+  background-color: #fff3cd;
+  border-radius: 4px;
+}
+
+[data-md-color-scheme="dark"] .katex-error {
+  background-color: #332701;
+  color: #ffb703;
+}
+
+/* ============================================================================
+   Syntax Highlighting Colors
+   ============================================================================ */
+
+/* Light mode syntax highlighting */
+.hljs {
+  background-color: #f8f8f8;
+  color: #333;
+}
+
+.hljs-string {
+  color: #228b22;
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #2ca02c;
+}
+
+.hljs-attr,
+.hljs-attribute {
+  color: #1f77b4;
+}
+
+.hljs-keyword {
+  color: #d62728;
+  font-weight: bold;
+}
+
+.hljs-function {
+  color: #1f77b4;
+}
+
+.hljs-comment {
+  color: #999;
+  font-style: italic;
+}
+
+/* Dark mode syntax highlighting */
+[data-md-color-scheme="dark"] .hljs {
+  background-color: #252525;
+  color: #f0f0f0;
+}
+
+[data-md-color-scheme="dark"] .hljs-string {
+  color: #90ee90;
+}
+
+[data-md-color-scheme="dark"] .hljs-number,
+[data-md-color-scheme="dark"] .hljs-literal {
+  color: #ffa500;
+}
+
+[data-md-color-scheme="dark"] .hljs-attr,
+[data-md-color-scheme="dark"] .hljs-attribute {
+  color: #87ceeb;
+}
+
+[data-md-color-scheme="dark"] .hljs-keyword {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+[data-md-color-scheme="dark"] .hljs-function {
+  color: #87ceeb;
+}
+
+[data-md-color-scheme="dark"] .hljs-comment {
+  color: #666;
+  font-style: italic;
+}
+
+/* ============================================================================
+   Responsive Code Block Styling
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  pre {
+    margin: 1rem 0;
+    padding-right: 2.5rem;
+  }
+
+  .code-label {
+    top: -1.25rem;
+    font-size: 0.65rem;
+  }
+
+  .copy-button {
+    top: 0.25rem;
+    right: 0.25rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
