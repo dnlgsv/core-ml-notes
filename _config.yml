@@ -1,0 +1,67 @@
+# Site settings
+title: Core Ideas in Machine Learning
+description: A comprehensive study guide to fundamental concepts and ideas in machine learning.
+author: Daniil Gusev
+url: https://dnlgsv.github.io/core-ml-notes
+baseurl: /core-ml-notes
+
+# Repository
+repository: dnlgsv/core-ml-notes
+github:
+  url: https://github.com/dnlgsv/core-ml-notes
+
+# Theme
+theme: jekyll-theme-material
+remote_theme: jasonlong/cayman
+
+# Markdown processor
+markdown: kramdown
+kramdown:
+  auto_ids: true
+  parse_block_html: true
+  parse_span_html: true
+  input: GFM
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-github-metadata
+  - jemoji
+
+# Collections for organizing content
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: page
+  - scope:
+      path: "_posts"
+    values:
+      layout: post
+
+# Build settings
+exclude:
+  - .github
+  - .gitignore
+  - venv
+  - docs/_build
+  - COMPLETION_CHECKLIST.md
+  - STYLING_SUMMARY.md
+  - README.md.bak
+
+# Assets
+sass:
+  style: compressed
+  load_paths:
+    - _sass
+
+# Timezone
+timezone: UTC
