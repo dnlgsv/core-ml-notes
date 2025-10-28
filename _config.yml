@@ -10,9 +10,8 @@ repository: dnlgsv/core-ml-notes
 github:
   url: https://github.com/dnlgsv/core-ml-notes
 
-# Theme
-theme: jekyll-theme-material
-remote_theme: jasonlong/cayman
+# Theme (using remote_theme for GitHub Pages compatibility)
+remote_theme: pages-themes/cayman@v0.2.0
 
 # Markdown processor
 markdown: kramdown
