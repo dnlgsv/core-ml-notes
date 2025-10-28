@@ -1,0 +1,89 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+// Custom styling for documentation navigation
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.page-header {
+  padding: 20px 0;
+  background: linear-gradient(120deg, #1e3c72 0%, #2a5298 100%);
+}
+
+.page-header h1 {
+  font-size: 2.5em;
+  margin: 10px 0;
+}
+
+.page-header p {
+  margin: 5px 0;
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+
+.main-content {
+  max-width: 900px;
+  padding: 30px;
+}
+
+.main-content h1 {
+  border-bottom: 3px solid #1e3c72;
+  padding-bottom: 10px;
+}
+
+.main-content h2 {
+  margin-top: 30px;
+  color: #1e3c72;
+  border-left: 4px solid #2a5298;
+  padding-left: 15px;
+}
+
+.main-content h3 {
+  color: #2a5298;
+}
+
+.main-content a {
+  color: #2a5298;
+  text-decoration: none;
+  border-bottom: 1px solid #2a5298;
+}
+
+.main-content a:hover {
+  color: #1e3c72;
+  border-bottom: 2px solid #1e3c72;
+}
+
+.main-content ul {
+  line-height: 1.8;
+}
+
+.main-content li {
+  margin: 8px 0;
+}
+
+.main-content code {
+  background-color: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+}
+
+.main-content pre {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  overflow-x: auto;
+}
+
+// Navigation styling
+.site-footer {
+  background: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-size: 0.9em;
+}

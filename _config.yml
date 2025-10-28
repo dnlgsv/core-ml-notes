@@ -10,15 +10,13 @@ repository: dnlgsv/core-ml-notes
 github:
   url: https://github.com/dnlgsv/core-ml-notes
 
-# Theme - just-the-docs is perfect for documentation sites
-remote_theme: just-the-docs/just-the-docs@v0.7.0
+# Theme - Using officially supported GitHub Pages theme
+theme: jekyll-theme-slate
 
-# Just the Docs theme settings
-color_scheme: light
-search_enabled: true
-heading_anchors: true
-back_to_top: true
-footer_content: "Copyright &copy; 2025 Core Ideas in Machine Learning"
+# Custom CSS
+sass:
+  sass_dir: _sass
+  style: compressed
 
 # Markdown processor
 markdown: kramdown
@@ -56,12 +54,6 @@ exclude:
   - Gemfile.lock
   - DEPLOYMENT_CHECKLIST.md
   - MIGRATION_SUMMARY.md
-
-# Assets
-sass:
-  style: compressed
-  load_paths:
-    - _sass
 
 # Timezone
 timezone: UTC
