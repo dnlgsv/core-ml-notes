@@ -44,7 +44,8 @@ Minimizing cross-entropy is equivalent to maximizing the log-likelihood (with an
 ### 3 Key Insights
 1. **MLE → Cross-entropy**: Minimizing the loss function = maximizing the likelihood.
 2. **Convexity**: Guarantees finding the global minimum (a unique solution).
-3. **Linearity**: The decision boundary is a hyperplane \(\mathbf{w}^T\mathbf{x}+b=0\).
+3. **Linearity**: The decision boundary is a hyperplane:
+ $ \mathbf{w}^T\mathbf{x}+b=0 $
 
 ### Trade-offs for Discussion
 | Question | Answer |
@@ -75,13 +76,14 @@ A: Class weighting, SMOTE, threshold adjustment; metric: PR-AUC > ROC-AUC.
 A: SGD with a decaying learning rate; FTRL-Proximal for sparse data; important to monitor concept drift.
 
 ### Complexity
-- Let:
-    - **n** — number of samples,
-    - **d** — number of features,
-    - **iterations** — number of optimization iterations.
 - **Training**: O(iterations × n × d); Newton's method: O(n·d² + d³).
 - **Inference**: O(d) — very fast!
 - **Memory**: O(d) — only weights are stored.
+
+Where:
+   - **n** — number of samples,
+   - **d** — number of features,
+   - **iterations** — number of optimization iterations.
 
 ---
 
@@ -90,16 +92,17 @@ A: SGD with a decaying learning rate; FTRL-Proximal for sparse data; important t
 The model starts with a linear combination of features:
 $$ z = w_0 + w_1 x_1 + w_2 x_2 + \dots + w_n x_n = \mathbf{w}^T \mathbf{x} + b $$
 where:
-- \(\mathbf{x}\) — feature vector,
-- \(\mathbf{w}\) — weights vector,
-- \(b\) — bias / intercept.
+- $ \mathbf{x}\ $ — feature vector,
+- $ \mathbf{w}\ $ — weights vector,
+- $ \ b \ $ — bias / intercept.
 
 ### Sigmoid Function
 To obtain a probability, the sigmoid function is applied:
-$$ p(y=1 | \mathbf{x}) = \sigma(z) = \frac{1}{1 + e^{-z}} $$
-- For \(z \to \infty\), \(\sigma(z) \to 1\),
-- For \(z \to -\infty\), \(\sigma(z) \to 0\),
-- At \(z = 0\), \(\sigma(z) = 0.5\).
+$$ p(y=1 \mid \mathbf{x}) = \sigma(z) = \frac{1}{1 + e^{-z}} $$
+
+- For $z \to \infty$, $\sigma(z) \to 1$
+- For $z \to -\infty$, $\sigma(z) \to 0$
+- At $z = 0$, $\sigma(z) = 0.5$
 
 The sigmoid graph is an S-shaped curve, ideal for modeling probabilities.
 
@@ -121,38 +124,38 @@ $$ \mathrm{logit}(p) = \log\frac{p}{1-p} = \mathbf{w}^T \mathbf{x} + b $$
 ### Decision Boundary
 The decision rule at a 0.5 threshold is equivalent to a logit threshold of 0:
 $$ p > 0.5 \iff \mathbf{w}^T \mathbf{x} + b > 0 $$
-Thus, the decision surface is a hyperplane perpendicular to the weight vector \(\mathbf{w}\).
+Thus, the decision surface is a hyperplane perpendicular to the weight vector $ \mathbf{w}\ $
 
 ## Model Training
 ### Loss Function
 **Cross-entropy** is used for training, specifically **binary cross-entropy** for binary classification:
 $$ L(y, \hat{y}) = - [y \log(\hat{y}) + (1 - y) \log(1 - \hat{y})] $$
 where:
-- \(y\) — ground truth label,
-- \(\hat{y} = \sigma(z)\) — predicted probability.
+- $ y $ — ground truth label,
+- $ \hat{y} = \sigma{z}\ $ — predicted probability.
 
 For the entire dataset, the **cost function** is:
 $$ J(\mathbf{w}) = \frac{1}{m} \sum_{i=1}^m L(y_i, \hat{y}_i) $$
 
-This is better than **Mean Squared Error (MSE)** because cross-entropy heavily penalizes incorrect predictions (e.g., if y=1 and \(\hat{y}\) is close to 0, loss → ∞).
+This is better than **Mean Squared Error (MSE)** because cross-entropy heavily penalizes incorrect predictions (e.g., if $ y $ =1 and $ \hat{y}\ $ is close to 0, loss → ∞).
 
 ### With Regularization and Class Weights
-The full cost function with L2 (no penalty for bias \(b\)) and class weights \(w^{(cls)}_i\):
+The full cost function with L2 (no penalty for bias $ b $) and class weights $ w^{(cls)}_i $:
 $$ J(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i \cdot \Big(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y}_i)\Big) + \frac{\lambda}{2} \lVert \mathbf{w} \rVert_2^2 $$
 Gradients:
 $$ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top \big( w^{(cls)} \odot (\hat{\mathbf{p}} - \mathbf{y}) \big) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i(\hat{p}_i - y_i) $$
-- The intercept \(b\) is usually not penalized (or has a separate weak penalty).
+- The intercept $ b $ is usually not penalized (or has a separate weak penalty).
 - For class imbalance: weights are chosen inversely proportional to class frequencies, or `class_weight='balanced'` is used.
 
 ### Optimization: Gradient Descent
-The model is trained by minimizing J(w) using gradient descent:
+The model is trained by minimizing $ J(w) $ using gradient descent:
 1. Initialize weights (usually with zeros or small random numbers).
 2. Compute gradients:
    $$ \frac{\partial J}{\partial w_j} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_i - y_i) x_{i,j} $$
    $$ \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_i - y_i) $$
 3. Update weights:
    $$ w_j \leftarrow w_j - \alpha \frac{\partial J}{\partial w_j} $$
-   where \(\alpha\) is the **learning rate**.
+   where $ \alpha\ $ is the **learning rate**.
 
 Variants:
 - **Batch Gradient Descent**: Gradients over the entire dataset (slow for large data).
@@ -166,9 +169,9 @@ Vectorized gradient (with L2):
 $$ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top(\hat{\mathbf{p}} - \mathbf{y}) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m}\sum_i (\hat{p}_i - y_i) $$
 **Hessian matrix**:
 $$ H = \frac{1}{m} X^\top R X + \lambda I,\quad R = \mathrm{diag}(\hat{p}_i(1-\hat{p}_i)) $$
-A **Newton's method** step: \( \Delta\theta = H^{-1} g \) with \(g=[\nabla_\mathbf{w}J,\ \partial J/\partial b]\). This is equivalent to **Iteratively Reweighted Least Squares (IRLS)**.
-- Pros: quadratic convergence near the minimum, good for small \(d\).
-- Cons: computationally expensive (O(nd²)+solving O(d³)), scales poorly with large \(d\).
+A **Newton's method** step: $ \Delta\theta = H^{-1} g \ $ with $ g=[\nabla_\mathbf{w}J,\ $ $ \partial J/\partial b]\ $. This is equivalent to **Iteratively Reweighted Least Squares (IRLS)**.
+- Pros: quadratic convergence near the minimum, good for small $ d $.
+- Cons: computationally expensive $ O(nd²)$ +solving $ O(d³) $, scales poorly with large $ d $.
 
 ### Choice of Solvers
 - **lbfgs**: default for dense data, a quasi-Newton method.
@@ -180,11 +183,15 @@ Practice: for L1 or huge n — `saga`; for multinomial — `lbfgs`/`saga`; for v
 
 ## Regularization
 To avoid **overfitting**, a penalty for large weights is added:
-- **L2 (Ridge)**: \( J(\mathbf{w}) + \lambda \sum w_j^2 \) — shrinks weights towards zero, but does not make them exactly zero.
-- **L1 (Lasso)**: \( J(\mathbf{w}) + \lambda \sum |w_j| \) — can zero out weights, performing **feature selection**.
-- **Elastic Net**: A combination of L1 and L2.
+- **L2 (Ridge)**: $ J(\mathbf{w}) + \lambda \sum w_j^2 $ — shrinks weights towards zero, but does not make them exactly zero.
+- **L1 (Lasso)**: $ J(\mathbf{w}) + \lambda \sum |w_j| $ — can zero out weights, performing **feature selection**.
+- **Elastic Net**: A combination of L1 and L2:  
+  $$
+  J(\mathbf{w}) + \lambda \left( \alpha \sum |w_j| + \frac{1-\alpha}{2} \sum w_j^2 \right)
+  $$
+  where $\lambda$ controls the overall strength, and $\alpha \in [0,1]$ balances L1 vs L2.
 
-\(\lambda\) is a **hyperparameter**, tuned via **cross-validation**.
+$ \lambda $ is a **hyperparameter**, tuned via **cross-validation**.
 
 ## Model Evaluation
 ### Metrics
@@ -289,7 +296,7 @@ Split data into train/test, use k-fold for reliability.
 - **Metrics**: micro/macro/weighted F1, mAP, macro ROC-AUC/PR-AUC.
 
 ## Production Practices
-- Complexity: one epoch of GD — O(n·d); Newton's — O(n·d^2)+O(d^3). For large d, use `saga`/`lbfgs`.
+- Complexity: one epoch of GD — $ O(n·d) $; Newton's — $ O(n·d^2)+O(d^3) $. For large $ d $, use `saga`/`lbfgs`.
 - **Online learning**: SGD/mini-batch with a decaying learning rate; FTRL-Proximal for sparse features and L1.
 - Preprocessing: fix scalers/OHE dictionaries; for unseen categories — `handle_unknown` or **feature hashing**.
 - **Monitoring**: logloss/AUC/PR-AUC over time, calibration (reliability), **PSI (Population Stability Index)** / **concept drift**, stability of score distributions.
@@ -301,7 +308,7 @@ Split data into train/test, use k-fold for reliability.
 ### Advantages
 - **Simplicity**: Easy to understand and implement; minimal hyperparameters.
 - **Interpretability**: Weights show feature importance; coefficients have a clear meaning (log-odds).
-- **Efficiency**: Trains quickly, works on large data; **inference** O(d) — very fast.
+- **Efficiency**: Trains quickly, works on large data; **inference** $ O(d) $ — very fast.
 - **Probabilistic output**: Provides calibratable probabilities, not just classes (important for ranking, cost-sensitive decisions).
 - **Scalability**: Works well with online learning (SGD, FTRL); easily parallelizable.
 - **Stability**: Convex loss function → guaranteed convergence to a global minimum.
