@@ -24,22 +24,22 @@ Unlike linear regression, which predicts continuous values, logistic regression 
 
 ### Probabilistic Interpretation: Maximum Likelihood Estimation (MLE)
 Training logistic regression is equivalent to **Maximum Likelihood Estimation (MLE)**:
-\[ L(\mathbf{w}) = \prod_{i=1}^m p(y_i | \mathbf{x}_i; \mathbf{w}) = \prod_{i=1}^m \hat{y}_i^{y_i} (1-\hat{y}_i)^{1-y_i} \]
+$$ L(\mathbf{w}) = \prod_{i=1}^m p(y_i | \mathbf{x}_i; \mathbf{w}) = \prod_{i=1}^m \hat{y}_i^{y_i} (1-\hat{y}_i)^{1-y_i} $$
 The log-likelihood is:
-\[ \log L(\mathbf{w}) = \sum_{i=1}^m [y_i \log \hat{y}_i + (1-y_i) \log(1-\hat{y}_i)] \]
+$$ \log L(\mathbf{w}) = \sum_{i=1}^m [y_i \log \hat{y}_i + (1-y_i) \log(1-\hat{y}_i)] $$
 Minimizing cross-entropy is equivalent to maximizing the log-likelihood (with an opposite sign).
 
-**Bayesian interpretation**: L2 regularization corresponds to a Gaussian prior on the weights, \(\mathbf{w} \sim \mathcal{N}(0, \sigma^2 I)\), where \(\lambda = 1/(2\sigma^2)\). This is **Maximum A Posteriori (MAP)** estimation instead of MLE.
+**Bayesian interpretation**: L2 regularization corresponds to a Gaussian prior on the weights, $ \mathbf{w} \sim \mathcal{N}(0, \sigma^2 I) $, where $ \lambda = 1/(2\sigma^2) $. This is **Maximum A Posteriori (MAP)** estimation instead of MLE.
 
 ---
 
 ## 📝 Quick Cheat Sheet (review 15 min before an interview)
 
 ### Key Formulas
-1. **Model**: \( p(y=1|\mathbf{x}) = \sigma(\mathbf{w}^T\mathbf{x} + b) = \frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}} \)
-2. **Loss**: \( J = -\frac{1}{m}\sum_i [y_i\log\hat{y}_i + (1-y_i)\log(1-\hat{y}_i)] + \frac{\lambda}{2}\lVert\mathbf{w}\rVert_2^2 \)
-3. **Gradient**: \( \nabla_\mathbf{w}J = \frac{1}{m}X^T(\hat{\mathbf{y}} - \mathbf{y}) + \lambda\mathbf{w} \)
-4. **Logits**: \( \log\frac{p}{1-p} = \mathbf{w}^T\mathbf{x} + b \)
+1. **Model**: $ p(y=1|\mathbf{x}) = \sigma(\mathbf{w}^T\mathbf{x} + b) = \frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}} $
+2. **Loss**: $ J = -\frac{1}{m}\sum_i [y_i\log\hat{y}_i + (1-y_i)\log(1-\hat{y}_i)] + \frac{\lambda}{2}\lVert\mathbf{w}\rVert_2^2 $
+3. **Gradient**: $ \nabla_\mathbf{w}J = \frac{1}{m}X^T(\hat{\mathbf{y}} - \mathbf{y}) + \lambda\mathbf{w} $
+4. **Logits**: $ \log\frac{p}{1-p} = \mathbf{w}^T\mathbf{x} + b $
 
 ### 3 Key Insights
 1. **MLE → Cross-entropy**: Minimizing the loss function = maximizing the likelihood.
@@ -88,7 +88,7 @@ A: SGD with a decaying learning rate; FTRL-Proximal for sparse data; important t
 ## Mathematical Foundation
 ### Linear Combination
 The model starts with a linear combination of features:
-\[ z = w_0 + w_1 x_1 + w_2 x_2 + \dots + w_n x_n = \mathbf{w}^T \mathbf{x} + b \]
+$$ z = w_0 + w_1 x_1 + w_2 x_2 + \dots + w_n x_n = \mathbf{w}^T \mathbf{x} + b $$
 where:
 - \(\mathbf{x}\) — feature vector,
 - \(\mathbf{w}\) — weights vector,
@@ -96,7 +96,7 @@ where:
 
 ### Sigmoid Function
 To obtain a probability, the sigmoid function is applied:
-\[ p(y=1 | \mathbf{x}) = \sigma(z) = \frac{1}{1 + e^{-z}} \]
+$$ p(y=1 | \mathbf{x}) = \sigma(z) = \frac{1}{1 + e^{-z}} $$
 - For \(z \to \infty\), \(\sigma(z) \to 1\),
 - For \(z \to -\infty\), \(\sigma(z) \to 0\),
 - At \(z = 0\), \(\sigma(z) = 0.5\).
@@ -108,39 +108,39 @@ The sigmoid graph is an S-shaped curve, ideal for modeling probabilities.
 - Otherwise — class 0.
 
 For multi-class classification, **softmax** is used (a generalization of sigmoid):
-\[ p(y=k | \mathbf{x}) = \frac{e^{z_k}}{\sum_{i=1}^K e^{z_i}} \]
+$$ p(y=k | \mathbf{x}) = \frac{e^{z_k}}{\sum_{i=1}^K e^{z_i}} $$
 
 ## Interpretation via Logits and Odds
 Probability can be interpreted through the **odds ratio**:
-\[ \text{odds} = \frac{p}{1-p} \]
+$$ \text{odds} = \frac{p}{1-p} $$
 The **logit** is the logarithm of the odds and depends linearly on the features:
-\[ \mathrm{logit}(p) = \log\frac{p}{1-p} = \mathbf{w}^T \mathbf{x} + b \]
+$$ \mathrm{logit}(p) = \log\frac{p}{1-p} = \mathbf{w}^T \mathbf{x} + b $$
 - An increase of feature \(x_j\) by 1 increases the log-odds by \(w_j\), and the odds themselves are multiplied by \(e^{w_j}\).
 - This provides a convenient interpretation of the coefficients and a basis for probability calibration.
 
 ### Decision Boundary
 The decision rule at a 0.5 threshold is equivalent to a logit threshold of 0:
-\[ p > 0.5 \iff \mathbf{w}^T \mathbf{x} + b > 0 \]
+$$ p > 0.5 \iff \mathbf{w}^T \mathbf{x} + b > 0 $$
 Thus, the decision surface is a hyperplane perpendicular to the weight vector \(\mathbf{w}\).
 
 ## Model Training
 ### Loss Function
 **Cross-entropy** is used for training, specifically **binary cross-entropy** for binary classification:
-\[ L(y, \hat{y}) = - [y \log(\hat{y}) + (1 - y) \log(1 - \hat{y})] \]
+$$ L(y, \hat{y}) = - [y \log(\hat{y}) + (1 - y) \log(1 - \hat{y})] $$
 where:
 - \(y\) — ground truth label,
 - \(\hat{y} = \sigma(z)\) — predicted probability.
 
 For the entire dataset, the **cost function** is:
-\[ J(\mathbf{w}) = \frac{1}{m} \sum_{i=1}^m L(y_i, \hat{y}_i) \]
+$$ J(\mathbf{w}) = \frac{1}{m} \sum_{i=1}^m L(y_i, \hat{y}_i) $$
 
 This is better than **Mean Squared Error (MSE)** because cross-entropy heavily penalizes incorrect predictions (e.g., if y=1 and \(\hat{y}\) is close to 0, loss → ∞).
 
 ### With Regularization and Class Weights
 The full cost function with L2 (no penalty for bias \(b\)) and class weights \(w^{(cls)}_i\):
-\[ J(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i \cdot \Big(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y}_i)\Big) + \frac{\lambda}{2} \lVert \mathbf{w} \rVert_2^2 \]
+$$ J(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i \cdot \Big(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y}_i)\Big) + \frac{\lambda}{2} \lVert \mathbf{w} \rVert_2^2 $$
 Gradients:
-\[ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top \big( w^{(cls)} \odot (\hat{\mathbf{p}} - \mathbf{y}) \big) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i(\hat{p}_i - y_i) \]
+$$ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top \big( w^{(cls)} \odot (\hat{\mathbf{p}} - \mathbf{y}) \big) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i(\hat{p}_i - y_i) $$
 - The intercept \(b\) is usually not penalized (or has a separate weak penalty).
 - For class imbalance: weights are chosen inversely proportional to class frequencies, or `class_weight='balanced'` is used.
 
@@ -148,10 +148,10 @@ Gradients:
 The model is trained by minimizing J(w) using gradient descent:
 1. Initialize weights (usually with zeros or small random numbers).
 2. Compute gradients:
-   \[ \frac{\partial J}{\partial w_j} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_i - y_i) x_{i,j} \]
-   \[ \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_i - y_i) \]
+   $$ \frac{\partial J}{\partial w_j} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_i - y_i) x_{i,j} $$
+   $$ \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_i - y_i) $$
 3. Update weights:
-   \[ w_j \leftarrow w_j - \alpha \frac{\partial J}{\partial w_j} \]
+   $$ w_j \leftarrow w_j - \alpha \frac{\partial J}{\partial w_j} $$
    where \(\alpha\) is the **learning rate**.
 
 Variants:
@@ -163,9 +163,9 @@ Additionally: momentum, Adam, RMSprop to accelerate convergence.
 
 ### Vector Form, Hessian, and Newton's Method / IRLS
 Vectorized gradient (with L2):
-\[ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top(\hat{\mathbf{p}} - \mathbf{y}) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m}\sum_i (\hat{p}_i - y_i) \]
+$$ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top(\hat{\mathbf{p}} - \mathbf{y}) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m}\sum_i (\hat{p}_i - y_i) $$
 **Hessian matrix**:
-\[ H = \frac{1}{m} X^\top R X + \lambda I,\quad R = \mathrm{diag}(\hat{p}_i(1-\hat{p}_i)) \]
+$$ H = \frac{1}{m} X^\top R X + \lambda I,\quad R = \mathrm{diag}(\hat{p}_i(1-\hat{p}_i)) $$
 A **Newton's method** step: \( \Delta\theta = H^{-1} g \) with \(g=[\nabla_\mathbf{w}J,\ \partial J/\partial b]\). This is equivalent to **Iteratively Reweighted Least Squares (IRLS)**.
 - Pros: quadratic convergence near the minimum, good for small \(d\).
 - Cons: computationally expensive (O(nd²)+solving O(d³)), scales poorly with large \(d\).
