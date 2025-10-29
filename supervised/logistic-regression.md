@@ -3,7 +3,6 @@ layout: default
 title: Logistic Regression
 parent: Supervised Learning
 nav_order: 2
-math: true
 ---
 
 # Logistic Regression
