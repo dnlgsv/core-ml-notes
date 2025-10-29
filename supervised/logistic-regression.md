@@ -24,9 +24,13 @@ Unlike linear regression, which predicts continuous values, logistic regression 
 
 ### Probabilistic Interpretation: Maximum Likelihood Estimation (MLE)
 Training logistic regression is equivalent to **Maximum Likelihood Estimation (MLE)**:
+
 $$ L(\mathbf{w}) = \prod_{i=1}^m p(y_i | \mathbf{x}_i; \mathbf{w}) = \prod_{i=1}^m \hat{y}_i^{y_i} (1-\hat{y}_i)^{1-y_i} $$
+
 The log-likelihood is:
+
 $$ \log L(\mathbf{w}) = \sum_{i=1}^m [y_i \log \hat{y}_i + (1-y_i) \log(1-\hat{y}_i)] $$
+
 Minimizing cross-entropy is equivalent to maximizing the log-likelihood (with an opposite sign).
 
 **Bayesian interpretation**: L2 regularization corresponds to a Gaussian prior on the weights, $ \mathbf{w} \sim \mathcal{N}(0, \sigma^2 I) $, where $ \lambda = 1/(2\sigma^2) $. This is **Maximum A Posteriori (MAP)** estimation instead of MLE.
@@ -36,10 +40,21 @@ Minimizing cross-entropy is equivalent to maximizing the log-likelihood (with an
 ## 📝 Quick Cheat Sheet (review 15 min before an interview)
 
 ### Key Formulas
-1. **Model**: $ p(y=1|\mathbf{x}) = \sigma(\mathbf{w}^T\mathbf{x} + b) = \frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}} $
-2. **Loss**: $ J = -\frac{1}{m}\sum_i [y_i\log\hat{y}_i + (1-y_i)\log(1-\hat{y}_i)] + \frac{\lambda}{2}\lVert\mathbf{w}\rVert_2^2 $
-3. **Gradient**: $ \nabla_\mathbf{w}J = \frac{1}{m}X^T(\hat{\mathbf{y}} - \mathbf{y}) + \lambda\mathbf{w} $
-4. **Logits**: $ \log\frac{p}{1-p} = \mathbf{w}^T\mathbf{x} + b $
+1. **Model**: 
+
+$$ p(y=1|\mathbf{x}) = \sigma(\mathbf{w}^T\mathbf{x} + b) = \frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}} $$
+
+2. **Loss**: 
+
+$$ J = -\frac{1}{m}\sum_i [y_i\log\hat{y}_i + (1-y_i)\log(1-\hat{y}_i)] + \frac{\lambda}{2}\lVert\mathbf{w}\rVert_2^2 $$
+
+3. **Gradient**: 
+
+$$ \nabla_\mathbf{w}J = \frac{1}{m}X^T(\hat{\mathbf{y}} - \mathbf{y}) + \lambda\mathbf{w} $$
+
+4. **Logits**: 
+
+$$ \log\frac{p}{1-p} = \mathbf{w}^T\mathbf{x} + b $$
 
 ### 3 Key Insights
 1. **MLE → Cross-entropy**: Minimizing the loss function = maximizing the likelihood.
@@ -48,13 +63,26 @@ Minimizing cross-entropy is equivalent to maximizing the log-likelihood (with an
  $ \mathbf{w}^T\mathbf{x}+b=0 $
 
 ### Trade-offs for Discussion
-| Question | Answer |
-|---|---|
-| **L1 vs L2?** | L1→sparsity, feature selection; L2→stability with multicollinearity. |
-| **SGD vs Batch GD?** | SGD→faster, for online learning; Batch→more precise, stable. |
-| **LogReg vs SVM?** | LogReg→probabilities; SVM→margin maximization, no native probabilities. |
-| **LogReg vs Boosting?** | LogReg→faster, interpretable; Boosting→higher accuracy. |
-| **ROC-AUC vs PR-AUC?** | ROC-AUC for balanced classes; PR-AUC for imbalanced (rare positive class). |
+
+- **L1 vs L2**: 
+
+L1 → sparsity, feature selection; L2 → stability with multicollinearity
+
+- **SGD vs Batch GD**: 
+
+SGD → faster, online learning; Batch → more precise, stable
+
+- **LogReg vs SVM**: 
+
+LogReg → probabilities; SVM → margin maximization, no native probabilities
+
+- **LogReg vs Boosting**: 
+
+LogReg → faster, interpretable; Boosting → higher accuracy
+
+- **ROC-AUC vs PR-AUC**: 
+
+ROC-AUC → balanced classes; PR-AUC → imbalanced (rare positives)
 
 ### What to Draw on a Whiteboard
 1. ✅ Sigmoid (S-curve): 0→0.5→1
