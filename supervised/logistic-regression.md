@@ -3,6 +3,7 @@ layout: default
 title: Logistic Regression
 parent: Supervised Learning
 nav_order: 2
+math: true
 ---
 
 # Logistic Regression
@@ -37,8 +38,8 @@ Minimizing cross-entropy is equivalent to maximizing the log-likelihood (with an
 
 ### Key Formulas
 1. **Model**: \( p(y=1|\mathbf{x}) = \sigma(\mathbf{w}^T\mathbf{x} + b) = \frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}} \)
-2. **Loss**: \( J = -\frac{1}{m}\sum_i [y_i\log\hat{y}_i + (1-y_i)\log(1-\hat{y}_i)] + \frac{\lambda}{2}\|\mathbf{w}\|^2 \)
-3. **Gradient**: \( \nabla_\mathbf{w}J = \frac{1}{m}X^T(\hat{y} - y) + \lambda\mathbf{w} \)
+2. **Loss**: \( J = -\frac{1}{m}\sum_i [y_i\log\hat{y}_i + (1-y_i)\log(1-\hat{y}_i)] + \frac{\lambda}{2}\lVert\mathbf{w}\rVert_2^2 \)
+3. **Gradient**: \( \nabla_\mathbf{w}J = \frac{1}{m}X^T(\hat{\mathbf{y}} - \mathbf{y}) + \lambda\mathbf{w} \)
 4. **Logits**: \( \log\frac{p}{1-p} = \mathbf{w}^T\mathbf{x} + b \)
 
 ### 3 Key Insights
@@ -138,9 +139,9 @@ This is better than **Mean Squared Error (MSE)** because cross-entropy heavily p
 
 ### With Regularization and Class Weights
 The full cost function with L2 (no penalty for bias \(b\)) and class weights \(w^{(cls)}_i\):
-\[ J(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i \cdot \Big(-y_i\log\hat y_i - (1-y_i)\log(1-\hat y_i)\Big) + \frac{\lambda}{2} \lVert \mathbf{w} \rVert_2^2 \]
+\[ J(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i \cdot \Big(-y_i\log\hat{y}_i - (1-y_i)\log(1-\hat{y}_i)\Big) + \frac{\lambda}{2} \lVert \mathbf{w} \rVert_2^2 \]
 Gradients:
-\[ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top \big( w^{(cls)} \odot (\hat p - y) \big) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i(\hat p_i - y_i) \]
+\[ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top \big( w^{(cls)} \odot (\hat{\mathbf{p}} - \mathbf{y}) \big) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^m w^{(cls)}_i(\hat{p}_i - y_i) \]
 - The intercept \(b\) is usually not penalized (or has a separate weak penalty).
 - For class imbalance: weights are chosen inversely proportional to class frequencies, or `class_weight='balanced'` is used.
 
@@ -163,9 +164,9 @@ Additionally: momentum, Adam, RMSprop to accelerate convergence.
 
 ### Vector Form, Hessian, and Newton's Method / IRLS
 Vectorized gradient (with L2):
-\[ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top(\hat p - y) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m}\sum_i (\hat p_i - y_i) \]
+\[ \nabla_{\mathbf{w}} J = \frac{1}{m} X^\top(\hat{\mathbf{p}} - \mathbf{y}) + \lambda\,\mathbf{w},\quad \frac{\partial J}{\partial b} = \frac{1}{m}\sum_i (\hat{p}_i - y_i) \]
 **Hessian matrix**:
-\[ H = \frac{1}{m} X^\top R X + \lambda I,\quad R = \mathrm{diag}(\hat p_i(1-\hat p_i)) \]
+\[ H = \frac{1}{m} X^\top R X + \lambda I,\quad R = \mathrm{diag}(\hat{p}_i(1-\hat{p}_i)) \]
 A **Newton's method** step: \( \Delta\theta = H^{-1} g \) with \(g=[\nabla_\mathbf{w}J,\ \partial J/\partial b]\). This is equivalent to **Iteratively Reweighted Least Squares (IRLS)**.
 - Pros: quadratic convergence near the minimum, good for small \(d\).
 - Cons: computationally expensive (O(nd²)+solving O(d³)), scales poorly with large \(d\).
@@ -551,7 +552,7 @@ b) Sigmoid graph (MUST draw!):
       └────┴────┴──── z
          -5  0  5
 ```
-Formula: σ(z) = 1/(1+e⁻ᶻ)
+Formula: σ(z) = 1/(1+e^{-z})
 
 c) Decision boundary (2D example):
 ```
@@ -596,7 +597,7 @@ J(w) = -1/m Σᵢ [yᵢlog(ŷᵢ) + (1-yᵢ)log(1-ŷᵢ)]
 
 e) With regularization:
 ```
-J(w) = -1/m Σᵢ [...] + λ/2·‖w‖²₂
+J(w) = -1/m Σᵢ [...] + λ/2·||w||_2^2
 ```
 
 **Why not MSE?** "Cross-entropy penalizes confident errors more strongly; it's a convex function; gradients do not vanish"
@@ -613,12 +614,12 @@ a) Gradient:
 
 b) Vector form:
 ```
-∇ᵥⱼ = 1/m·Xᵀ(ŷ - y) + λw
+∇_w J = 1/m·Xᵀ(ŷ - y) + λw
 ```
 
 c) Gradient Descent update:
 ```
-w ← w - α·∇ᵥJ
+w ← w - α·∇_w J
 ```
 
 **Variants:**
@@ -1603,7 +1604,7 @@ where \(\phi\) is a non-linear mapping to a high-dimensional space.
 
 ### 5. FTRL (Follow-The-Regularized-Leader) for online learning
 Used at Google for CTR prediction:
-\[ \mathbf{w}_{t+1} = \arg\min_\mathbf{w} \left( \mathbf{w}^T \sum_{s=1}^t \mathbf{g}_s + \frac{\lambda_1}{2}\|\mathbf{w}\|_1 + \frac{\lambda_2}{2}\|\mathbf{w}\|_2^2 \right) \]
+\[ \mathbf{w}_{t+1} = \arg\min_\mathbf{w} \left( \mathbf{w}^T \sum_{s=1}^t \mathbf{g}_s + \frac{\lambda_1}{2}\lVert\mathbf{w}\rVert_1 + \frac{\lambda_2}{2}\lVert\mathbf{w}\rVert_2^2 \right) \]
 
 **Advantages**:
 - Supports L1 (sparse) online

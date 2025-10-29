@@ -13,6 +13,9 @@ github:
 # Theme - Using officially supported GitHub Pages theme  
 remote_theme: just-the-docs/just-the-docs
 
+just_the_docs:
+  math: true
+
 # Custom CSS
 sass:
   sass_dir: _sass
@@ -25,6 +28,7 @@ kramdown:
   parse_block_html: true
   parse_span_html: true
   input: GFM
+  math_engine: mathjax
 
 # Plugins
 plugins:
