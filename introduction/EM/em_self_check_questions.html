@@ -1,0 +1,60 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --qa-bg: #ffffff;
+    --qa-card: #f6f8fa;
+    --qa-border: #d0d7de;
+    --qa-text: #24292f;
+    --qa-muted: #57606a;
+    --qa-accent: #534ab7;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --qa-bg: #1f1f1f;
+      --qa-card: #2a2a2a;
+      --qa-border: #444c56;
+      --qa-text: #d7d9de;
+      --qa-muted: #a8adb7;
+      --qa-accent: #9b92ff;
+    }
+  }
+
+  body { margin: 0; padding: 16px; background: var(--qa-bg); color: var(--qa-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .qa-accordion { display: grid; gap: 10px; }
+  .qa-card { border: 1px solid var(--qa-border); border-radius: 8px; background: var(--qa-card); overflow: hidden; }
+  .qa-question { width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 14px; border: 0; background: transparent; color: var(--qa-text); font: inherit; font-size: 14px; font-weight: 600; line-height: 1.4; text-align: left; cursor: pointer; }
+  .qa-question::after { content: "+"; flex: 0 0 auto; color: var(--qa-accent); font-weight: 700; }
+  .qa-card.open .qa-question::after { content: "-"; }
+  .qa-answer { display: none; padding: 0 14px 14px; color: var(--qa-muted); font-size: 13px; line-height: 1.6; }
+  .qa-card.open .qa-answer { display: block; }
+</style>
+
+<div class="qa-accordion">
+  <div class="qa-card">
+    <button class="qa-question">When is EM useful?</button>
+    <div class="qa-answer">When the likelihood involves hidden, missing, or latent variables that would make direct maximum likelihood difficult.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">What does the E-step compute?</button>
+    <div class="qa-answer">It computes the posterior distribution over latent variables using the current parameter values.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">What does the M-step optimize?</button>
+    <div class="qa-answer">It maximizes the expected complete-data log-likelihood formed in the E-step.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">Why does EM not simply solve the original log-likelihood directly?</button>
+    <div class="qa-answer">The observed-data log-likelihood often contains a log of a sum over latent variables, which is hard to optimize directly.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">Does EM guarantee the global maximum?</button>
+    <div class="qa-answer">No. EM improves the likelihood monotonically under standard conditions, but it can converge to a local optimum.</div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".qa-question").forEach(button => {
+    button.addEventListener("click", () => button.parentElement.classList.toggle("open"));
+  });
+</script>

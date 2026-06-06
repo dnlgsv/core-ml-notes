@@ -1,0 +1,68 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --qa-bg: #ffffff;
+    --qa-card: #f6f8fa;
+    --qa-border: #d0d7de;
+    --qa-text: #24292f;
+    --qa-muted: #57606a;
+    --qa-accent: #534ab7;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --qa-bg: #1f1f1f;
+      --qa-card: #2a2a2a;
+      --qa-border: #444c56;
+      --qa-text: #d7d9de;
+      --qa-muted: #a8adb7;
+      --qa-accent: #9b92ff;
+    }
+  }
+
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--qa-bg);
+    color: var(--qa-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .qa-accordion { display: grid; gap: 10px; }
+  .qa-card { border: 1px solid var(--qa-border); border-radius: 8px; background: var(--qa-card); overflow: hidden; }
+  .qa-question { width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 14px; border: 0; background: transparent; color: var(--qa-text); font: inherit; font-size: 14px; font-weight: 600; line-height: 1.4; text-align: left; cursor: pointer; }
+  .qa-question::after { content: "+"; flex: 0 0 auto; color: var(--qa-accent); font-weight: 700; }
+  .qa-card.open .qa-question::after { content: "-"; }
+  .qa-answer { display: none; padding: 0 14px 14px; color: var(--qa-muted); font-size: 13px; line-height: 1.6; }
+  .qa-card.open .qa-answer { display: block; }
+  code { color: var(--qa-text); }
+</style>
+
+<div class="qa-accordion">
+  <div class="qa-card">
+    <button class="qa-question">What extra ingredient does MAP add to MLE?</button>
+    <div class="qa-answer">MAP adds a prior over parameters. It maximizes likelihood times prior, or equivalently log-likelihood plus log-prior.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">When does MAP become close to MLE?</button>
+    <div class="qa-answer">When the prior is uniform, very weak, or dominated by a large amount of data.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">Why does a Gaussian prior lead to L2 regularization?</button>
+    <div class="qa-answer">The negative log of a zero-mean Gaussian prior is proportional to the squared L2 norm of the parameters.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">What is the MAP estimate for a Bernoulli coin with Beta(alpha, beta) prior?</button>
+    <div class="qa-answer">For an interior mode, it is <code>(k + alpha - 1) / (n + alpha + beta - 2)</code>.</div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question">Why is MAP not the same as full Bayesian inference?</button>
+    <div class="qa-answer">MAP returns one point estimate. Full Bayesian inference keeps the entire posterior distribution and therefore preserves uncertainty.</div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".qa-question").forEach(button => {
+    button.addEventListener("click", () => button.parentElement.classList.toggle("open"));
+  });
+</script>

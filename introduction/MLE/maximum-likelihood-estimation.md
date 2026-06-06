@@ -58,10 +58,62 @@ This helps for two reasons:
 
 ## MLE for a coin: analytic derivation
 
-For a coin with $k$ heads in $n$ tosses, the Bernoulli log-likelihood is
+For one toss, encode heads as $x_i = 1$ and tails as $x_i = 0$. Under a Bernoulli model with probability of heads $\theta$, the probability of the observed result is
 
 $$
-\ell(\theta) = k \log \theta + (n-k) \log(1-\theta)
+P(x_i \mid \theta) = \theta^{x_i}(1-\theta)^{1-x_i}
+$$
+
+This compact formula gives $\theta$ when $x_i = 1$ and $1-\theta$ when $x_i = 0$.
+
+For a full observed sequence $\mathcal{D} = (x_1, \dots, x_n)$, independence gives
+
+$$
+\mathcal{L}(\theta)
+= P(\mathcal{D} \mid \theta)
+= \prod_{i=1}^{n} \theta^{x_i}(1-\theta)^{1-x_i}
+$$
+
+If the sequence contains $k$ heads, then $\sum_i x_i = k$ and $\sum_i (1-x_i) = n-k$, so
+
+$$
+\mathcal{L}(\theta) = \theta^k(1-\theta)^{n-k}
+$$
+
+To turn this likelihood into a log-likelihood, we use three logarithm facts.
+
+First, $\log$ is strictly increasing on positive numbers, so it preserves the maximizer:
+
+$$
+\mathcal{L}(\theta_1) > \mathcal{L}(\theta_2)
+\quad \Longleftrightarrow \quad
+\log \mathcal{L}(\theta_1) > \log \mathcal{L}(\theta_2)
+$$
+
+Therefore maximizing $\mathcal{L}(\theta)$ is equivalent to maximizing $\log \mathcal{L}(\theta)$.
+
+Second, products become sums:
+
+$$
+\log(ab) = \log a + \log b
+$$
+
+Third, powers become multipliers:
+
+$$
+\log(a^c) = c\log a
+$$
+
+Apply them step by step:
+
+$$
+\begin{aligned}
+\ell(\theta)
+&= \log \mathcal{L}(\theta) \\
+&= \log\left(\theta^k(1-\theta)^{n-k}\right) \\
+&= \log(\theta^k) + \log\left((1-\theta)^{n-k}\right) \\
+&= k \log \theta + (n-k) \log(1-\theta)
+\end{aligned}
 $$
 
 This is the log-likelihood of one particular sequence with $k$ heads and $n-k$ tails. If we instead ask for the probability of seeing exactly $k$ heads in any order, the likelihood includes the binomial coefficient $\binom{n}{k}$. That coefficient does not depend on $\theta$, so it does not affect which value of $\theta$ maximizes the likelihood.

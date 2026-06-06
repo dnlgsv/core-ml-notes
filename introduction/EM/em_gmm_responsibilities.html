@@ -1,0 +1,197 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --card: #f6f8fa;
+    --border: #d0d7de;
+    --text: #24292f;
+    --muted: #57606a;
+    --purple: #534ab7;
+    --green: #1f883d;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1f1f1f;
+      --card: #2a2a2a;
+      --border: #444c56;
+      --text: #d7d9de;
+      --muted: #a8adb7;
+      --purple: #9b92ff;
+      --green: #57ab5a;
+    }
+  }
+
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .controls, .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  label, .label {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  input { width: 100%; }
+  .value { margin: 0; font-size: 20px; font-weight: 600; }
+  canvas { width: 100%; height: 280px; display: block; }
+  .hint { color: var(--muted); font-size: 12px; text-align: center; margin: 9px 0 0; }
+
+  @media (max-width: 760px) {
+    .controls, .stats { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="controls">
+  <div class="card">
+    <label for="x">Point x: <span id="xVal">0.0</span></label>
+    <input id="x" type="range" min="-5" max="5" value="0" step="0.1">
+  </div>
+  <div class="card">
+    <label for="m1">Mean 1: <span id="m1Val">-1.6</span></label>
+    <input id="m1" type="range" min="-5" max="2" value="-1.6" step="0.1">
+  </div>
+  <div class="card">
+    <label for="m2">Mean 2: <span id="m2Val">1.8</span></label>
+    <input id="m2" type="range" min="-2" max="5" value="1.8" step="0.1">
+  </div>
+</div>
+
+<div class="stats">
+  <div class="card">
+    <span class="label">Responsibility of component 1</span>
+    <p class="value" id="r1">0.55</p>
+  </div>
+  <div class="card">
+    <span class="label">Responsibility of component 2</span>
+    <p class="value" id="r2">0.45</p>
+  </div>
+  <div class="card">
+    <span class="label">Assignment type</span>
+    <p class="value" id="assignment">soft</p>
+  </div>
+</div>
+
+<canvas id="chart" aria-label="Two Gaussian components and responsibility for a selected point"></canvas>
+<p class="hint">The vertical marker is one observed point. EM assigns it fractionally to each component.</p>
+
+<script>
+  const xInput = document.getElementById("x");
+  const m1Input = document.getElementById("m1");
+  const m2Input = document.getElementById("m2");
+  const ids = ["xVal", "m1Val", "m2Val", "r1", "r2", "assignment"];
+  const out = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  const canvas = document.getElementById("chart");
+  const ctx = canvas.getContext("2d");
+
+  function css(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function normal(x, mu, sigma) {
+    return Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI));
+  }
+
+  function render() {
+    const x = Number(xInput.value);
+    const m1 = Number(m1Input.value);
+    const m2 = Number(m2Input.value);
+    const sigma = 1.05;
+    const p1 = 0.5 * normal(x, m1, sigma);
+    const p2 = 0.5 * normal(x, m2, sigma);
+    const r1 = p1 / (p1 + p2);
+    const r2 = 1 - r1;
+
+    out.xVal.textContent = x.toFixed(1);
+    out.m1Val.textContent = m1.toFixed(1);
+    out.m2Val.textContent = m2.toFixed(1);
+    out.r1.textContent = r1.toFixed(2);
+    out.r2.textContent = r2.toFixed(2);
+    out.assignment.textContent = r1 > 0.85 || r2 > 0.85 ? "almost hard" : "soft";
+
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const w = rect.width;
+    const h = rect.height;
+    const pad = { left: 38, right: 14, top: 12, bottom: 30 };
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = css("--border");
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, h - pad.bottom);
+    ctx.lineTo(w - pad.right, h - pad.bottom);
+    ctx.stroke();
+
+    const minX = -5, maxX = 5;
+    const xs = [];
+    for (let i = 0; i <= 200; i++) xs.push(minX + (maxX - minX) * i / 200);
+    const y1 = xs.map(v => normal(v, m1, sigma));
+    const y2 = xs.map(v => normal(v, m2, sigma));
+    const maxY = Math.max(...y1, ...y2);
+
+    function px(v) { return pad.left + (v - minX) / (maxX - minX) * (w - pad.left - pad.right); }
+    function py(v) { return h - pad.bottom - v / maxY * (h - pad.top - pad.bottom); }
+
+    function line(vals, stroke) {
+      ctx.beginPath();
+      vals.forEach((v, i) => {
+        const xx = px(xs[i]);
+        const yy = py(v);
+        if (i === 0) ctx.moveTo(xx, yy);
+        else ctx.lineTo(xx, yy);
+      });
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    line(y1, css("--purple"));
+    line(y2, css("--green"));
+
+    const markerX = px(x);
+    ctx.strokeStyle = css("--text");
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(markerX, pad.top);
+    ctx.lineTo(markerX, h - pad.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = css("--text");
+    ctx.beginPath();
+    ctx.arc(markerX, h - pad.bottom, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = css("--muted");
+    ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    [-5, -2.5, 0, 2.5, 5].forEach(t => ctx.fillText(String(t), px(t), h - 9));
+  }
+
+  [xInput, m1Input, m2Input].forEach(input => input.addEventListener("input", render));
+  window.addEventListener("resize", render);
+  render();
+</script>

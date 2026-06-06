@@ -1,0 +1,199 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --card: #f6f8fa;
+    --border: #d0d7de;
+    --text: #24292f;
+    --muted: #57606a;
+    --accent: #534ab7;
+    --green: #1f883d;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1f1f1f;
+      --card: #2a2a2a;
+      --border: #444c56;
+      --text: #d7d9de;
+      --muted: #a8adb7;
+      --accent: #9b92ff;
+      --green: #57ab5a;
+    }
+  }
+
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  button {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 9px 10px;
+    font: inherit;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  button.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .label {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 0 0 6px;
+  }
+
+  .value {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  canvas { width: 100%; height: 300px; display: block; }
+  .explain { color: var(--muted); font-size: 13px; line-height: 1.55; margin: 10px 0 0; }
+
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="layout">
+  <div class="card">
+    <p class="label">Current phase</p>
+    <p class="value" id="phase">Start</p>
+    <p class="label">Iteration</p>
+    <p class="value" id="iter">0</p>
+    <p class="label">Log-likelihood</p>
+    <p class="value" id="ll">-42.0</p>
+    <button class="primary" id="step">Next EM step</button>
+    <button id="reset">Reset</button>
+  </div>
+  <div class="card">
+    <canvas id="chart" aria-label="EM likelihood lower bound stepper"></canvas>
+    <p class="explain" id="text">EM starts with parameters. The E-step builds a local lower bound; the M-step improves that bound and raises the likelihood.</p>
+  </div>
+</div>
+
+<script>
+  const states = [
+    { phase: "Start", iter: 0, ll: -42.0, bound: -48.0, text: "Start with an initial parameter guess. The likelihood may be far from optimal." },
+    { phase: "E-step", iter: 1, ll: -42.0, bound: -42.0, text: "The E-step computes latent-variable posteriors and creates a bound touching the current likelihood." },
+    { phase: "M-step", iter: 1, ll: -34.5, bound: -38.0, text: "The M-step maximizes the expected complete-data log-likelihood, increasing the observed-data likelihood." },
+    { phase: "E-step", iter: 2, ll: -34.5, bound: -34.5, text: "A new E-step rebuilds the bound so it touches the improved likelihood." },
+    { phase: "M-step", iter: 2, ll: -31.2, bound: -32.8, text: "Another M-step improves the bound. Gains often get smaller near convergence." },
+    { phase: "Converged", iter: 3, ll: -30.8, bound: -30.8, text: "At convergence, the parameters change very little and the likelihood has stabilized." }
+  ];
+
+  let index = 0;
+  const phase = document.getElementById("phase");
+  const iter = document.getElementById("iter");
+  const ll = document.getElementById("ll");
+  const text = document.getElementById("text");
+  const canvas = document.getElementById("chart");
+  const ctx = canvas.getContext("2d");
+
+  function css(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function render() {
+    const state = states[index];
+    phase.textContent = state.phase;
+    iter.textContent = state.iter;
+    ll.textContent = state.ll.toFixed(1);
+    text.textContent = state.text;
+
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const w = rect.width;
+    const h = rect.height;
+    const pad = { left: 45, right: 18, top: 16, bottom: 32 };
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.strokeStyle = css("--border");
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, h - pad.bottom);
+    ctx.lineTo(w - pad.right, h - pad.bottom);
+    ctx.stroke();
+
+    const minY = -50, maxY = -28;
+    function px(i) { return pad.left + i / (states.length - 1) * (w - pad.left - pad.right); }
+    function py(v) { return h - pad.bottom - (v - minY) / (maxY - minY) * (h - pad.top - pad.bottom); }
+
+    function line(values, stroke) {
+      ctx.beginPath();
+      values.forEach((v, i) => {
+        const x = px(i);
+        const y = py(v);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    const visible = states.slice(0, index + 1);
+    line(visible.map(s => s.ll), css("--accent"));
+    line(visible.map(s => s.bound), css("--green"));
+
+    visible.forEach((s, i) => {
+      ctx.fillStyle = css("--accent");
+      ctx.beginPath();
+      ctx.arc(px(i), py(s.ll), 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = css("--green");
+      ctx.beginPath();
+      ctx.arc(px(i), py(s.bound), 4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    ctx.fillStyle = css("--muted");
+    ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    states.forEach((s, i) => ctx.fillText(String(i), px(i), h - 10));
+    ctx.textAlign = "left";
+    ctx.fillText("purple: likelihood", pad.left + 6, pad.top + 14);
+    ctx.fillText("green: lower bound", pad.left + 6, pad.top + 30);
+  }
+
+  document.getElementById("step").addEventListener("click", () => {
+    index = Math.min(index + 1, states.length - 1);
+    render();
+  });
+  document.getElementById("reset").addEventListener("click", () => {
+    index = 0;
+    render();
+  });
+  window.addEventListener("resize", render);
+  render();
+</script>

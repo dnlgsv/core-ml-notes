@@ -1,0 +1,262 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --card: #f6f8fa;
+    --border: #d0d7de;
+    --text: #24292f;
+    --muted: #57606a;
+    --accent: #534ab7;
+    --green: #1f883d;
+    --orange: #bc4c00;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1f1f1f;
+      --card: #2a2a2a;
+      --border: #444c56;
+      --text: #d7d9de;
+      --muted: #a8adb7;
+      --accent: #9b92ff;
+      --green: #57ab5a;
+      --orange: #e3b341;
+    }
+  }
+
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  label, .label {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  input { width: 100%; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .value {
+    margin: 0;
+    color: var(--text);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  canvas {
+    width: 100%;
+    height: 260px;
+    display: block;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .swatch {
+    display: inline-block;
+    width: 24px;
+    height: 3px;
+    border-radius: 99px;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+
+  @media (max-width: 760px) {
+    .grid, .stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<div class="grid">
+  <div class="card">
+    <label for="n">Tosses n: <span id="nVal">10</span></label>
+    <input id="n" type="range" min="1" max="60" value="10" step="1">
+  </div>
+  <div class="card">
+    <label for="k">Heads k: <span id="kVal">7</span></label>
+    <input id="k" type="range" min="0" max="10" value="7" step="1">
+  </div>
+  <div class="card">
+    <label for="alpha">Prior alpha: <span id="alphaVal">2.0</span></label>
+    <input id="alpha" type="range" min="1" max="12" value="2" step="0.5">
+  </div>
+  <div class="card">
+    <label for="beta">Prior beta: <span id="betaVal">2.0</span></label>
+    <input id="beta" type="range" min="1" max="12" value="2" step="0.5">
+  </div>
+</div>
+
+<div class="stats">
+  <div class="card">
+    <span class="label">MLE</span>
+    <p class="value" id="mle">0.700</p>
+  </div>
+  <div class="card">
+    <span class="label">MAP</span>
+    <p class="value" id="map">0.667</p>
+  </div>
+  <div class="card">
+    <span class="label">Posterior mean</span>
+    <p class="value" id="mean">0.643</p>
+  </div>
+</div>
+
+<canvas id="chart" aria-label="Likelihood, prior, and posterior curves"></canvas>
+
+<div class="legend">
+  <span><span class="swatch" style="background: var(--accent);"></span>Likelihood</span>
+  <span><span class="swatch" style="background: var(--orange);"></span>Prior</span>
+  <span><span class="swatch" style="background: var(--green);"></span>Posterior</span>
+</div>
+
+<script>
+  const el = {
+    n: document.getElementById("n"),
+    k: document.getElementById("k"),
+    alpha: document.getElementById("alpha"),
+    beta: document.getElementById("beta"),
+    nVal: document.getElementById("nVal"),
+    kVal: document.getElementById("kVal"),
+    alphaVal: document.getElementById("alphaVal"),
+    betaVal: document.getElementById("betaVal"),
+    mle: document.getElementById("mle"),
+    map: document.getElementById("map"),
+    mean: document.getElementById("mean"),
+    canvas: document.getElementById("chart")
+  };
+
+  const ctx = el.canvas.getContext("2d");
+
+  function color(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function curveValue(theta, a, b) {
+    return Math.pow(theta, a) * Math.pow(1 - theta, b);
+  }
+
+  function normalize(values) {
+    const max = Math.max(...values, 1e-12);
+    return values.map(v => v / max);
+  }
+
+  function drawLine(points, stroke, width) {
+    ctx.beginPath();
+    points.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = width;
+    ctx.stroke();
+  }
+
+  function render() {
+    const n = Number(el.n.value);
+    let k = Math.min(Number(el.k.value), n);
+    el.k.max = String(n);
+    el.k.value = String(k);
+    const alpha = Number(el.alpha.value);
+    const beta = Number(el.beta.value);
+
+    const mle = k / n;
+    const map = (k + alpha - 1) / (n + alpha + beta - 2);
+    const mean = (k + alpha) / (n + alpha + beta);
+
+    el.nVal.textContent = n;
+    el.kVal.textContent = k;
+    el.alphaVal.textContent = alpha.toFixed(1);
+    el.betaVal.textContent = beta.toFixed(1);
+    el.mle.textContent = mle.toFixed(3);
+    el.map.textContent = map.toFixed(3);
+    el.mean.textContent = mean.toFixed(3);
+
+    const rect = el.canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    el.canvas.width = Math.floor(rect.width * dpr);
+    el.canvas.height = Math.floor(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const w = rect.width;
+    const h = rect.height;
+    const pad = { left: 38, right: 14, top: 12, bottom: 30 };
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.strokeStyle = color("--border");
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, h - pad.bottom);
+    ctx.lineTo(w - pad.right, h - pad.bottom);
+    ctx.stroke();
+
+    const xs = [];
+    for (let i = 1; i < 100; i++) xs.push(i / 100);
+
+    const likelihood = normalize(xs.map(t => curveValue(t, k, n - k)));
+    const prior = normalize(xs.map(t => curveValue(t, alpha - 1, beta - 1)));
+    const posterior = normalize(xs.map(t => curveValue(t, k + alpha - 1, n - k + beta - 1)));
+
+    function toPoints(values) {
+      return values.map((v, i) => {
+        const theta = xs[i];
+        return {
+          x: pad.left + theta * (w - pad.left - pad.right),
+          y: h - pad.bottom - v * (h - pad.top - pad.bottom)
+        };
+      });
+    }
+
+    drawLine(toPoints(likelihood), color("--accent"), 2.5);
+    drawLine(toPoints(prior), color("--orange"), 2);
+    drawLine(toPoints(posterior), color("--green"), 2.5);
+
+    ctx.fillStyle = color("--muted");
+    ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+      const x = pad.left + t * (w - pad.left - pad.right);
+      ctx.fillText(t.toFixed(2), x, h - 9);
+    });
+  }
+
+  ["input", "change"].forEach(evt => {
+    [el.n, el.k, el.alpha, el.beta].forEach(input => input.addEventListener(evt, render));
+  });
+  window.addEventListener("resize", render);
+  render();
+</script>
