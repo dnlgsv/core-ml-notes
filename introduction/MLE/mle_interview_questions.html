@@ -1,0 +1,158 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --qa-bg: #ffffff;
+    --qa-card: #f6f8fa;
+    --qa-border: #d0d7de;
+    --qa-text: #24292f;
+    --qa-muted: #57606a;
+    --qa-accent: #534ab7;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --qa-bg: #1f1f1f;
+      --qa-card: #2a2a2a;
+      --qa-border: #444c56;
+      --qa-text: #d7d9de;
+      --qa-muted: #a8adb7;
+      --qa-accent: #9b92ff;
+    }
+  }
+
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--qa-bg);
+    color: var(--qa-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .qa-accordion {
+    display: grid;
+    gap: 10px;
+  }
+
+  .qa-card {
+    border: 1px solid var(--qa-border);
+    border-radius: 8px;
+    background: var(--qa-card);
+    overflow: hidden;
+  }
+
+  .qa-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border: 0;
+    background: transparent;
+    color: var(--qa-text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .qa-question::after {
+    content: "+";
+    flex: 0 0 auto;
+    color: var(--qa-accent);
+    font-weight: 700;
+  }
+
+  .qa-card.open .qa-question::after {
+    content: "-";
+  }
+
+  .qa-answer {
+    display: none;
+    padding: 0 14px 14px;
+    color: var(--qa-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .qa-answer p {
+    margin: 0;
+  }
+
+  .qa-answer code {
+    color: var(--qa-text);
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  }
+
+  .qa-card.open .qa-answer {
+    display: block;
+  }
+</style>
+
+<div class="qa-accordion">
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What assumptions are usually made when writing the likelihood as a product?</button>
+    <div class="qa-answer">
+      <p>The standard assumption is that observations are independent, often independent and identically distributed (i.i.d.). Independence lets us write the joint likelihood as a product over observations.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Is likelihood a probability distribution over parameters?</button>
+    <div class="qa-answer">
+      <p>No. In frequentist MLE, the likelihood is a function of the parameter, but it is not a probability distribution over the parameter. To put a probability distribution over parameters, we need a Bayesian prior and posterior.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What is the difference between MLE and MAP?</button>
+    <div class="qa-answer">
+      <p>MLE maximizes <code>P(data | theta)</code>. MAP maximizes <code>P(theta | data)</code>, which is proportional to <code>P(data | theta)P(theta)</code>. MAP adds a prior, and that prior often acts like regularization.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why is cross-entropy the loss for logistic regression?</button>
+    <div class="qa-answer">
+      <p>Logistic regression models labels as Bernoulli random variables. The negative Bernoulli log-likelihood is exactly binary cross-entropy.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why is MSE connected to Gaussian noise?</button>
+    <div class="qa-answer">
+      <p>If the target is modeled as <code>y_i = f(x_i) + epsilon_i</code> with Gaussian noise, the Gaussian negative log-likelihood is proportional to the sum of squared residuals, plus constants.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What can go wrong with MLE?</button>
+    <div class="qa-answer">
+      <p>MLE can be biased in small samples, sensitive to outliers, and unstable when the model is misspecified. In some models, the likelihood may also be unbounded or have multiple local maxima.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why do we often minimize average negative log-likelihood instead of total negative log-likelihood?</button>
+    <div class="qa-answer">
+      <p>Averaging by <code>n</code> does not change the minimizer, but it makes the scale of the loss less dependent on dataset size. This is useful for reporting, comparing runs, and choosing learning rates.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What does it mean if two parameter values have similar likelihood?</button>
+    <div class="qa-answer">
+      <p>It means the observed data do not strongly distinguish between those parameter values. With more informative data, the likelihood curve usually becomes sharper around the best estimate.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".qa-question").forEach((button) => {
+    button.addEventListener("click", () => {
+      const card = button.closest(".qa-card");
+      const isOpen = !card.classList.contains("open");
+      document.querySelectorAll(".qa-card").forEach((item) => {
+        item.classList.remove("open");
+        item.querySelector(".qa-question").setAttribute("aria-expanded", "false");
+      });
+      card.classList.toggle("open", isOpen);
+      button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+  });
+</script>

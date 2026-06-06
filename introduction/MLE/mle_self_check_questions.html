@@ -1,0 +1,146 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --qa-bg: #ffffff;
+    --qa-card: #f6f8fa;
+    --qa-border: #d0d7de;
+    --qa-text: #24292f;
+    --qa-muted: #57606a;
+    --qa-accent: #534ab7;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --qa-bg: #1f1f1f;
+      --qa-card: #2a2a2a;
+      --qa-border: #444c56;
+      --qa-text: #d7d9de;
+      --qa-muted: #a8adb7;
+      --qa-accent: #9b92ff;
+    }
+  }
+
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--qa-bg);
+    color: var(--qa-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .qa-accordion {
+    display: grid;
+    gap: 10px;
+  }
+
+  .qa-card {
+    border: 1px solid var(--qa-border);
+    border-radius: 8px;
+    background: var(--qa-card);
+    overflow: hidden;
+  }
+
+  .qa-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border: 0;
+    background: transparent;
+    color: var(--qa-text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .qa-question::after {
+    content: "+";
+    flex: 0 0 auto;
+    color: var(--qa-accent);
+    font-weight: 700;
+  }
+
+  .qa-card.open .qa-question::after {
+    content: "-";
+  }
+
+  .qa-answer {
+    display: none;
+    padding: 0 14px 14px;
+    color: var(--qa-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .qa-answer p {
+    margin: 0;
+  }
+
+  .qa-answer code {
+    color: var(--qa-text);
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  }
+
+  .qa-card.open .qa-answer {
+    display: block;
+  }
+</style>
+
+<div class="qa-accordion">
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What is the difference between probability and likelihood?</button>
+    <div class="qa-answer">
+      <p>Probability treats the parameters as fixed and asks how likely different data outcomes are. Likelihood treats the observed data as fixed and asks which parameter values make those data most plausible.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why does MLE for a coin give theta_hat = k / n?</button>
+    <div class="qa-answer">
+      <p>The likelihood is maximized when the model's predicted probability of heads matches the observed fraction of heads. Differentiating the Bernoulli log-likelihood gives <code>k/theta - (n-k)/(1-theta) = 0</code>, which solves to <code>theta_hat = k/n</code>.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why can we maximize log-likelihood instead of likelihood?</button>
+    <div class="qa-answer">
+      <p>The logarithm is monotonic, so it does not change the location of the maximum. It also turns products into sums, which are easier to compute, differentiate, and optimize.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why is negative log-likelihood used as a loss?</button>
+    <div class="qa-answer">
+      <p>Optimization libraries usually minimize objectives. MLE is a maximization problem, so we multiply the log-likelihood by <code>-1</code> and minimize the negative log-likelihood instead.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why does Gaussian MLE lead to mean squared error?</button>
+    <div class="qa-answer">
+      <p>Under Gaussian noise with fixed variance, the log-likelihood contains a negative squared-error term. Maximizing that log-likelihood is therefore equivalent to minimizing the sum of squared errors.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why does the MLE variance use 1/n instead of 1/(n-1)?</button>
+    <div class="qa-answer">
+      <p>MLE chooses the parameter that maximizes likelihood, not the estimator with zero finite-sample bias. The <code>1/(n-1)</code> version is the unbiased sample variance, which optimizes a different criterion.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".qa-question").forEach((button) => {
+    button.addEventListener("click", () => {
+      const card = button.closest(".qa-card");
+      const isOpen = !card.classList.contains("open");
+      document.querySelectorAll(".qa-card").forEach((item) => {
+        item.classList.remove("open");
+        item.querySelector(".qa-question").setAttribute("aria-expanded", "false");
+      });
+      card.classList.toggle("open", isOpen);
+      button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+  });
+</script>
