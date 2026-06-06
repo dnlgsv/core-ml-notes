@@ -1,0 +1,80 @@
+
+<style>
+.step-dot { width:8px; height:8px; border-radius:50%; background:var(--color-border-secondary); transition:background .2s; display:inline-block; }
+.step-dot.active { background:#534AB7; }
+.prop-card { background:var(--color-background-secondary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:20px 24px; min-height:130px; }
+.prop-title { font-size:15px; font-weight:500; color:var(--color-text-primary); margin:0 0 8px; }
+.prop-body { font-size:13px; color:var(--color-text-secondary); line-height:1.65; margin:0 0 10px; }
+.prop-eq { font-family:var(--font-mono); font-size:12px; background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); padding:6px 10px; display:inline-block; color:var(--color-text-primary); }
+</style>
+<h2 class="sr-only">Пять ключевых свойств метода максимального правдоподобия</h2>
+
+<div style="padding-top:1rem;">
+  <div id="step-dots" style="display:flex; gap:8px; margin-bottom:16px; justify-content:center;"></div>
+  <div id="prop-content" class="prop-card"></div>
+  <div style="display:flex; gap:10px; margin-top:14px;">
+    <button id="prev-btn" onclick="prevStep()">← Назад</button>
+    <button id="next-btn" onclick="nextStep()" style="flex:1;">Далее →</button>
+  </div>
+</div>
+
+<script>
+const props = [
+  {
+    title: 'Состоятельность (consistency)',
+    body: 'При n → ∞ MLE-оценка сходится к истинному значению параметра. Чем больше данных, тем точнее оценка.',
+    eq: 'θ̂_MLE →ᵖ θ* при n → ∞',
+    extra: 'Это фундаментальное свойство — оценка не "застрянет" в неправильном месте при достаточном количестве данных.'
+  },
+  {
+    title: 'Асимптотическая нормальность',
+    body: 'При больших n распределение ошибки оценки приближается к нормальному. Отсюда берутся доверительные интервалы.',
+    eq: '√n(θ̂ − θ*) →ᵈ N(0, I(θ*)⁻¹)',
+    extra: 'I(θ) — информация Фишера. Чем больше информации в данных, тем уже доверительный интервал.'
+  },
+  {
+    title: 'Эффективность (Cramér–Rao)',
+    body: 'MLE достигает наименьшей возможной дисперсии среди всех несмещённых оценок — нижней границы Крамера–Рао.',
+    eq: 'Var(θ̂) ≥ 1/I(θ)  — граница Крамера–Рао',
+    extra: 'MLE "выжимает" максимум информации из данных. Другая оценка не может быть точнее при тех же данных.'
+  },
+  {
+    title: 'Инвариантность',
+    body: 'Если θ̂ — MLE параметра θ, то g(θ̂) — MLE для g(θ). Можно свободно делать замену переменных.',
+    eq: 'MLE[g(θ)] = g(MLE[θ])',
+    extra: 'Например: если MLE для σ² = 4.0, то MLE для σ = 2.0. Удобно при преобразованиях модели.'
+  },
+  {
+    title: 'Смещённость при малых выборках',
+    body: 'Несмотря на все достоинства, MLE бывает смещённой при малом n. Классический пример — дисперсия.',
+    eq: 'σ̂²_MLE = (1/n)Σ(xᵢ−x̄)² — смещена!',
+    extra: 'Несмещённая оценка делит на (n−1), а не на n. Это поправка Бесселя, исправляющая смещение MLE.'
+  }
+];
+
+let current = 0;
+
+function render() {
+  const p = props[current];
+  document.getElementById('prop-content').innerHTML = `
+    <p class="prop-title">${p.title}</p>
+    <p class="prop-body">${p.body}</p>
+    <p class="prop-eq">${p.eq}</p>
+    <p class="prop-body" style="margin-top:10px;font-size:12px;">${p.extra}</p>
+  `;
+  document.querySelectorAll('.step-dot').forEach((d,i) => d.classList.toggle('active', i === current));
+  document.getElementById('prev-btn').disabled = current === 0;
+  document.getElementById('next-btn').textContent = current === props.length - 1 ? '↺ Сначала' : 'Далее →';
+}
+
+function nextStep() { current = (current + 1) % props.length; render(); }
+function prevStep() { if (current > 0) { current--; render(); } }
+
+const dotsEl = document.getElementById('step-dots');
+props.forEach((_, i) => {
+  const d = document.createElement('span');
+  d.className = 'step-dot' + (i===0?' active':'');
+  dotsEl.appendChild(d);
+});
+render();
+</script>

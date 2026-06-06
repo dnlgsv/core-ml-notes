@@ -1,0 +1,85 @@
+
+<h2 class="sr-only">Сравнение правдоподобия и лог-правдоподобия — оба имеют максимум в одной точке</h2>
+<div style="padding-top:1rem; display:flex; gap:12px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+  <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--color-text-secondary);">
+    <span style="width:24px;height:3px;background:#534AB7;display:inline-block;border-radius:2px;"></span> L(θ) — правдоподобие
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--color-text-secondary);">
+    <span style="width:24px;height:0;border-top:2px dashed #1D9E75;display:inline-block;"></span> ℓ(θ) = log L(θ)
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--color-text-secondary);">
+    <span style="width:24px;height:0;border-top:2px dashed #D85A30;display:inline-block;"></span> максимум (N=10, k=7)
+  </div>
+</div>
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+  <div style="position:relative; height:200px;">
+    <canvas id="lik-chart" role="img" aria-label="График правдоподобия L(theta)"></canvas>
+  </div>
+  <div style="position:relative; height:200px;">
+    <canvas id="log-chart" role="img" aria-label="График лог-правдоподобия log L(theta)"></canvas>
+  </div>
+</div>
+<p style="font-size:12px; color:var(--color-text-secondary); margin-top:8px; text-align:center;">
+  Максимум в одной точке θ̂ = 0.7 — логарифм не меняет положение пика, только масштаб
+</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const tc = isDark ? '#c2c0b6' : '#3d3d3a';
+const gc = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+
+const thetas = [];
+for (let t = 0.01; t <= 0.99; t += 0.01) thetas.push(parseFloat(t.toFixed(2)));
+
+const n = 10, k = 7;
+function binom(n, k) { let r=1; for(let i=0;i<k;i++) r=r*(n-i)/(i+1); return r; }
+const C = binom(n, k);
+const liks = thetas.map(t => C * Math.pow(t, k) * Math.pow(1-t, n-k));
+const logLiks = thetas.map(t => Math.log(C) + k*Math.log(t) + (n-k)*Math.log(1-t));
+const mleTheta = k/n;
+const maxL = C * Math.pow(mleTheta,k)*Math.pow(1-mleTheta,n-k);
+
+const sharedOpts = (yTitle) => ({
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: {
+      ticks: { color: tc, maxTicksLimit: 6, callback: (v,i) => thetas[i]%0.2<0.011 ? thetas[i].toFixed(1) : '' },
+      grid: { color: gc },
+      title: { display: true, text: 'θ', color: tc, font:{size:11} }
+    },
+    y: {
+      ticks: { color: tc, maxTicksLimit: 5 },
+      grid: { color: gc },
+      title: { display: true, text: yTitle, color: tc, font:{size:11} }
+    }
+  },
+  animation: false
+});
+
+new Chart(document.getElementById('lik-chart'), {
+  type: 'line',
+  data: {
+    labels: thetas,
+    datasets: [
+      { data: liks, borderColor: '#534AB7', borderWidth: 2, pointRadius: 0, tension: 0.2, fill: false },
+      { data: thetas.map(t => Math.abs(t - mleTheta) < 0.016 ? maxL : null), borderColor: '#D85A30', borderWidth: 1.5, borderDash:[4,3], pointRadius: 0, fill: false }
+    ]
+  },
+  options: sharedOpts('L(θ)')
+});
+
+const maxLL = Math.log(C) + k*Math.log(mleTheta) + (n-k)*Math.log(1-mleTheta);
+new Chart(document.getElementById('log-chart'), {
+  type: 'line',
+  data: {
+    labels: thetas,
+    datasets: [
+      { data: logLiks, borderColor: '#1D9E75', borderWidth: 2, pointRadius: 0, tension: 0.2, fill: false, borderDash:[5,3] },
+      { data: thetas.map(t => Math.abs(t - mleTheta) < 0.016 ? maxLL : null), borderColor: '#D85A30', borderWidth: 1.5, borderDash:[4,3], pointRadius: 0, fill: false }
+    ]
+  },
+  options: sharedOpts('ℓ(θ) = log L(θ)')
+});
+</script>
