@@ -1,26 +1,26 @@
 
-<h2 class="sr-only">Сравнение правдоподобия и лог-правдоподобия — оба имеют максимум в одной точке</h2>
+<h2 class="sr-only">Likelihood and log-likelihood comparison with the same maximum point</h2>
 <div style="padding-top:1rem; display:flex; gap:12px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
   <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--color-text-secondary);">
-    <span style="width:24px;height:3px;background:#534AB7;display:inline-block;border-radius:2px;"></span> L(θ) — правдоподобие
+    <span style="width:24px;height:3px;background:#534AB7;display:inline-block;border-radius:2px;"></span> L(θ) - likelihood
   </div>
   <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--color-text-secondary);">
     <span style="width:24px;height:0;border-top:2px dashed #1D9E75;display:inline-block;"></span> ℓ(θ) = log L(θ)
   </div>
   <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--color-text-secondary);">
-    <span style="width:24px;height:0;border-top:2px dashed #D85A30;display:inline-block;"></span> максимум (N=10, k=7)
+    <span style="width:24px;height:0;border-top:2px dashed #D85A30;display:inline-block;"></span> maximum (N=10, k=7)
   </div>
 </div>
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
   <div style="position:relative; height:200px;">
-    <canvas id="lik-chart" role="img" aria-label="График правдоподобия L(theta)"></canvas>
+    <canvas id="lik-chart" role="img" aria-label="Likelihood plot L(theta)"></canvas>
   </div>
   <div style="position:relative; height:200px;">
-    <canvas id="log-chart" role="img" aria-label="График лог-правдоподобия log L(theta)"></canvas>
+    <canvas id="log-chart" role="img" aria-label="Log-likelihood plot log L(theta)"></canvas>
   </div>
 </div>
 <p style="font-size:12px; color:var(--color-text-secondary); margin-top:8px; text-align:center;">
-  Максимум в одной точке θ̂ = 0.7 — логарифм не меняет положение пика, только масштаб
+  The maximum occurs at the same point θ̂ = 0.7 - the logarithm changes the scale, not the location of the peak
 </p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>

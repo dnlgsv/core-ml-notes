@@ -1,3 +1,5 @@
+https://dnlgsv.github.io/core-ml-notes/
+
 # Core Ideas in Machine Learning
 
 A comprehensive study guide to fundamental concepts and ideas in machine learning.

@@ -6,43 +6,43 @@
 .mcard .ml { font-size:11px; color:var(--color-text-secondary); margin:0 0 2px; }
 .mcard .mv { font-size:17px; font-weight:500; color:var(--color-text-primary); margin:0; }
 </style>
-<h2 class="sr-only">Интерактивный фиттинг нормального распределения методом MLE</h2>
+<h2 class="sr-only">Interactive Gaussian fitting with Maximum Likelihood Estimation</h2>
 
 <div style="padding-top:1rem;">
   <div class="ctrl">
-    <span style="min-width:70px;">Истинное μ</span>
+    <span style="min-width:70px;">True μ</span>
     <input type="range" id="mu-true" min="150" max="190" step="1" value="170" style="flex:1;">
     <span class="v" id="mu-true-v">170</span>
   </div>
   <div class="ctrl">
-    <span style="min-width:70px;">Истинное σ</span>
+    <span style="min-width:70px;">True σ</span>
     <input type="range" id="sig-true" min="3" max="20" step="1" value="8" style="flex:1;">
     <span class="v" id="sig-true-v">8</span>
   </div>
   <div class="ctrl">
-    <span style="min-width:70px;">Размер выборки n</span>
+    <span style="min-width:70px;">Sample size n</span>
     <input type="range" id="n-size" min="5" max="200" step="1" value="30" style="flex:1;">
     <span class="v" id="n-size-v">30</span>
   </div>
 
   <div style="display:flex; gap:8px; margin-bottom:12px;">
-    <button onclick="resample()">Новая выборка ↗</button>
+    <button onclick="resample()">New sample ↗</button>
   </div>
 
   <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-    <div class="mcard"><p class="ml">Истинное μ</p><p class="mv" id="mu-true-disp">170</p></div>
+    <div class="mcard"><p class="ml">True μ</p><p class="mv" id="mu-true-disp">170</p></div>
     <div class="mcard"><p class="ml">MLE μ̂</p><p class="mv" id="mu-hat" style="color:var(--color-text-info);">—</p></div>
-    <div class="mcard"><p class="ml">Истинное σ</p><p class="mv" id="sig-true-disp">8</p></div>
+    <div class="mcard"><p class="ml">True σ</p><p class="mv" id="sig-true-disp">8</p></div>
     <div class="mcard"><p class="ml">MLE σ̂</p><p class="mv" id="sig-hat" style="color:var(--color-text-info);">—</p></div>
-    <div class="mcard"><p class="ml">Лог-правд. ℓ</p><p class="mv" id="log-lik-v" style="font-size:14px;">—</p></div>
+    <div class="mcard"><p class="ml">Log-lik. ℓ</p><p class="mv" id="log-lik-v" style="font-size:14px;">—</p></div>
   </div>
 
   <div style="position:relative; height:230px;">
-    <canvas id="gauss-chart" role="img" aria-label="Гистограмма данных с подобранной нормальной кривой MLE и истинным распределением"></canvas>
+    <canvas id="gauss-chart" role="img" aria-label="Data histogram with fitted MLE Gaussian curve and true distribution"></canvas>
   </div>
   <div style="display:flex; gap:16px; margin-top:8px; font-size:12px; color:var(--color-text-secondary); flex-wrap:wrap;">
-    <span style="display:flex;align-items:center;gap:5px;"><span style="width:20px;height:3px;background:#534AB7;display:inline-block;border-radius:1px;"></span>MLE оценка</span>
-    <span style="display:flex;align-items:center;gap:5px;"><span style="width:20px;height:0;border-top:2px dashed #D85A30;display:inline-block;"></span>Истинное распределение</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:20px;height:3px;background:#534AB7;display:inline-block;border-radius:1px;"></span>MLE fit</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:20px;height:0;border-top:2px dashed #D85A30;display:inline-block;"></span>True distribution</span>
   </div>
 </div>
 
@@ -83,7 +83,7 @@ const chart = new Chart(document.getElementById('gauss-chart'), {
     datasets: [
       {
         type: 'bar',
-        label: 'Данные',
+        label: 'Data',
         data: [],
         backgroundColor: isDark ? 'rgba(127,119,221,0.35)' : 'rgba(127,119,221,0.25)',
         borderColor: '#7F77DD',
@@ -103,7 +103,7 @@ const chart = new Chart(document.getElementById('gauss-chart'), {
       },
       {
         type: 'line',
-        label: 'Истинное',
+        label: 'True',
         data: [],
         borderColor: '#D85A30',
         borderWidth: 1.5,
@@ -121,12 +121,12 @@ const chart = new Chart(document.getElementById('gauss-chart'), {
       x: {
         ticks: { color: tc, maxTicksLimit: 10, callback: (v, i) => xVals[i] % 10 === 0 ? xVals[i] : '' },
         grid: { color: gc },
-        title: { display: true, text: 'x (рост, см)', color: tc, font:{size:11} }
+        title: { display: true, text: 'x (height, cm)', color: tc, font:{size:11} }
       },
       y: {
         ticks: { color: tc, maxTicksLimit: 5 },
         grid: { color: gc },
-        title: { display: true, text: 'Плотность', color: tc, font:{size:11} }
+        title: { display: true, text: 'Density', color: tc, font:{size:11} }
       }
     },
     animation: { duration: 300 }

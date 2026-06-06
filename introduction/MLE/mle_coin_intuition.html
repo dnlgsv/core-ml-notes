@@ -4,17 +4,17 @@
 .big { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
 .card-sm { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; }
 </style>
-<h2 class="sr-only">Интерактивная демонстрация MLE на примере подбрасывания монеты</h2>
+<h2 class="sr-only">Interactive MLE demonstration using coin tosses</h2>
 
 <div style="padding-top:1rem;">
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
     <div class="card-sm">
-      <p class="lbl">Число подбрасываний N</p>
+      <p class="lbl">Number of tosses N</p>
       <input type="range" id="n-slider" min="1" max="30" step="1" value="10" style="width:100%; margin:6px 0;">
       <p class="lbl">N = <span id="n-val" style="font-weight:500;color:var(--color-text-primary);">10</span></p>
     </div>
     <div class="card-sm">
-      <p class="lbl">Число орлов k</p>
+      <p class="lbl">Number of heads k</p>
       <input type="range" id="k-slider" min="0" max="10" step="1" value="7" style="width:100%; margin:6px 0;">
       <p class="lbl">k = <span id="k-val" style="font-weight:500;color:var(--color-text-primary);">7</span></p>
     </div>
@@ -22,24 +22,24 @@
 
   <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px;">
     <div class="card-sm" style="text-align:center;">
-      <p class="lbl">MLE оценка θ̂</p>
+      <p class="lbl">MLE estimate θ̂</p>
       <p class="big" id="mle-est">0.700</p>
     </div>
     <div class="card-sm" style="text-align:center;">
-      <p class="lbl">Макс. правдоподобие</p>
+      <p class="lbl">Max likelihood</p>
       <p class="big" id="max-lik" style="font-size:16px;">0.00267</p>
     </div>
     <div class="card-sm" style="text-align:center;">
-      <p class="lbl">Лог-правдоподобие</p>
+      <p class="lbl">Log-likelihood</p>
       <p class="big" id="log-lik" style="font-size:16px;">−5.92</p>
     </div>
   </div>
 
   <div style="position:relative; height:220px;">
-    <canvas id="coin-chart" role="img" aria-label="График правдоподобия в зависимости от параметра theta"></canvas>
+    <canvas id="coin-chart" role="img" aria-label="Likelihood curve as a function of theta"></canvas>
   </div>
   <p style="font-size:12px; color:var(--color-text-secondary); margin-top:8px; text-align:center;">
-    Вертикальная линия — MLE оценка θ̂ = k/N. Кривая — L(θ) = θᵏ(1−θ)ᴺ⁻ᵏ
+    Vertical line: MLE estimate θ̂ = k/N. Curve: L(θ) = θᵏ(1−θ)ᴺ⁻ᵏ
   </p>
 </div>
 
@@ -102,12 +102,12 @@ const chart = new Chart(document.getElementById('coin-chart'), {
       x: {
         ticks: { color: tc, maxTicksLimit: 11, callback: (v, i) => thetas[i] % 0.2 < 0.011 ? thetas[i].toFixed(1) : '' },
         grid: { color: gc },
-        title: { display: true, text: 'θ (вероятность орла)', color: tc, font: { size: 12 } }
+        title: { display: true, text: 'θ (probability of heads)', color: tc, font: { size: 12 } }
       },
       y: {
         ticks: { color: tc },
         grid: { color: gc },
-        title: { display: true, text: 'Правдоподобие L(θ)', color: tc, font: { size: 12 } }
+        title: { display: true, text: 'Likelihood L(θ)', color: tc, font: { size: 12 } }
       }
     }
   }
