@@ -6,10 +6,8 @@ nav_order: 2
 ---
 
 # Maximum Likelihood Estimation
-Explain MLE in the same way, with charts and interactive mode
 
-
-Maximum Likelihood Estimation (MLE) is one of the central ideas in statistics and machine learning. The goal is simple: choose the model parameters that make the observed data as likely as possible.
+Maximum Likelihood Estimation (MLE) is one of the central ideas in statistics and machine learning. The idea is simple: MLE chooses the parameters that make the data we actually observed most likely under the model.
 
 If you toss a coin 10 times and observe 7 heads, a reasonable guess is that the probability of heads is close to 0.7. MLE turns that intuition into a precise optimization problem.
 
@@ -17,17 +15,19 @@ If you toss a coin 10 times and observe 7 heads, a reasonable guess is that the 
 
 Suppose a coin lands heads with probability $\theta$. After $n$ tosses, you observe $k$ heads. MLE asks:
 
-> Which value of $\theta$ makes this exact outcome most plausible?
+> Which value of $\theta$ makes this exact outcome most likely?
 
 The interactive chart below shows that for $n = 10$ and $k = 7$, the likelihood peaks at $\theta = 0.7$. If you keep the same ratio but increase the sample size, for example $n = 20$ and $k = 14$, the peak stays in the same place while the curve becomes narrower. More data means more certainty.
 
 <iframe src="mle_coin_intuition.html" width="100%" height="560" style="border: 1px solid #d0d7de; border-radius: 12px; background: #fff;" loading="lazy"></iframe>
 
+There is one subtle but important naming convention here. When $\theta$ is fixed, $P(\mathcal{D} \mid \theta)$ is the probability of the data. When the observed data $\mathcal{D}$ are fixed and we vary $\theta$, the same expression is viewed as a function of the parameter. That function is called the **likelihood**.
+
 ## Formal definition
 
 Let the dataset be $\mathcal{D} = \{x_1, \dots, x_n\}$ and let the model depend on parameters $\theta$.
 
-The **likelihood function** is the probability of observing the data under those parameters:
+The **likelihood function** is the probability, or probability density for continuous data, of observing the data under those parameters:
 
 $$
 \mathcal{L}(\theta) = P(\mathcal{D} \mid \theta) = \prod_{i=1}^{n} P(x_i \mid \theta)
@@ -63,6 +63,8 @@ For a coin with $k$ heads in $n$ tosses, the Bernoulli log-likelihood is
 $$
 \ell(\theta) = k \log \theta + (n-k) \log(1-\theta)
 $$
+
+This is the log-likelihood of one particular sequence with $k$ heads and $n-k$ tails. If we instead ask for the probability of seeing exactly $k$ heads in any order, the likelihood includes the binomial coefficient $\binom{n}{k}$. That coefficient does not depend on $\theta$, so it does not affect which value of $\theta$ maximizes the likelihood.
 
 Differentiate with respect to $\theta$ and set the derivative to zero:
 
@@ -107,6 +109,8 @@ The density of one observation is
 $$
 P(x_i \mid \mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} \exp\!\left(-\frac{(x_i - \mu)^2}{2\sigma^2}\right)
 $$
+
+For continuous variables, this value is a probability density, not the probability of observing exactly one point. Exact points have probability zero in continuous distributions. MLE still works the same way: it chooses the parameters that give the observed sample the highest joint density.
 
 For the full dataset, the log-likelihood is
 
@@ -168,6 +172,8 @@ then maximizing the Gaussian likelihood is equivalent to minimizing the sum of s
 
 MLE is popular because, under standard regularity assumptions, it has several strong asymptotic properties:
 
+These are long-run guarantees. They explain why MLE is so widely used, but they do not mean every small dataset gives an unbiased or highly accurate estimate.
+
 - **Consistency**: as $n \to \infty$, the estimate converges to the true parameter.
 - **Asymptotic normality**: for large samples, the estimate is approximately Gaussian around the true value.
 - **Asymptotic efficiency**: it achieves the lowest possible variance among a broad class of estimators.
@@ -186,16 +192,103 @@ MLE is popular because, under standard regularity assumptions, it has several st
 | Where does mean squared error come from? | MLE for Gaussian noise |
 | How does regularization fit in? | It appears naturally in Maximum A Posteriori (MAP) estimation through a prior |
 
+## Self-check questions
+
+Use these questions to check whether the main ideas are clear before moving on.
+
+<details>
+<summary>1. What is the difference between probability and likelihood?</summary>
+
+Probability treats the parameters as fixed and asks how likely different data outcomes are. Likelihood treats the observed data as fixed and asks which parameter values make those data most plausible.
+</details>
+
+<details>
+<summary>2. Why does MLE for a coin give $\hat{\theta} = k/n$?</summary>
+
+The likelihood is maximized when the model's predicted probability of heads matches the observed fraction of heads. Differentiating the Bernoulli log-likelihood gives $k/\theta - (n-k)/(1-\theta) = 0$, which solves to $\hat{\theta} = k/n$.
+</details>
+
+<details>
+<summary>3. Why can we maximize log-likelihood instead of likelihood?</summary>
+
+The logarithm is monotonic, so it does not change the location of the maximum. It also turns products into sums, which are easier to compute, differentiate, and optimize.
+</details>
+
+<details>
+<summary>4. Why is negative log-likelihood used as a loss?</summary>
+
+Optimization libraries usually minimize objectives. MLE is a maximization problem, so we multiply the log-likelihood by $-1$ and minimize the negative log-likelihood instead.
+</details>
+
+<details>
+<summary>5. Why does Gaussian MLE lead to mean squared error?</summary>
+
+Under Gaussian noise with fixed variance, the log-likelihood contains a negative squared-error term. Maximizing that log-likelihood is therefore equivalent to minimizing the sum of squared errors.
+</details>
+
+<details>
+<summary>6. Why does the MLE variance use $1/n$ instead of $1/(n-1)$?</summary>
+
+MLE chooses the parameter that maximizes likelihood, not the estimator with zero finite-sample bias. The $1/(n-1)$ version is the unbiased sample variance, which optimizes a different criterion.
+</details>
+
+## Common interview questions
+
+These are the versions of MLE questions that often appear in machine learning and statistics interviews.
+
+<details>
+<summary>1. What assumptions are usually made when writing the likelihood as a product?</summary>
+
+The standard assumption is that observations are independent, often independent and identically distributed (i.i.d.). Independence lets us write the joint likelihood as $\prod_i P(x_i \mid \theta)$.
+</details>
+
+<details>
+<summary>2. Is likelihood a probability distribution over parameters?</summary>
+
+No. In frequentist MLE, the likelihood is a function of the parameter, but it is not a probability distribution over the parameter. To put a probability distribution over parameters, we need a Bayesian prior and posterior.
+</details>
+
+<details>
+<summary>3. What is the difference between MLE and MAP?</summary>
+
+MLE maximizes $P(\mathcal{D} \mid \theta)$. MAP maximizes $P(\theta \mid \mathcal{D})$, which is proportional to $P(\mathcal{D} \mid \theta)P(\theta)$. MAP adds a prior, and that prior often acts like regularization.
+</details>
+
+<details>
+<summary>4. Why is cross-entropy the loss for logistic regression?</summary>
+
+Logistic regression models labels as Bernoulli random variables. The negative Bernoulli log-likelihood is exactly binary cross-entropy.
+</details>
+
+<details>
+<summary>5. Why is MSE connected to Gaussian noise?</summary>
+
+If the target is modeled as $y_i = f(x_i) + \varepsilon_i$ with $\varepsilon_i \sim \mathcal{N}(0,\sigma^2)$, the Gaussian negative log-likelihood is proportional to the sum of squared residuals, plus constants.
+</details>
+
+<details>
+<summary>6. What can go wrong with MLE?</summary>
+
+MLE can be biased in small samples, sensitive to outliers, and unstable when the model is misspecified. In some models, the likelihood may also be unbounded or have multiple local maxima.
+</details>
+
+<details>
+<summary>7. Why do we often minimize average negative log-likelihood instead of total negative log-likelihood?</summary>
+
+Averaging by $n$ does not change the minimizer, but it makes the scale of the loss less dependent on dataset size. This is useful for reporting, comparing runs, and choosing learning rates.
+</details>
+
+<details>
+<summary>8. What does it mean if two parameter values have similar likelihood?</summary>
+
+It means the observed data do not strongly distinguish between those parameter values. With more informative data, the likelihood curve usually becomes sharper around the best estimate.
+</details>
+
 ## Where these ideas reappear
 
-- **Linear Regression**: minimizing mean squared error can be derived as maximum likelihood estimation under Gaussian noise.
-- **Logistic Regression**: binary cross-entropy is the negative log-likelihood of a Bernoulli model.
-- **Softmax Classification**: categorical cross-entropy is the negative log-likelihood of a categorical distribution.
-- **Naive Bayes**: class priors and conditional feature distributions are often estimated with maximum likelihood.
-- **Expectation-Maximization (EM)**: an iterative method for maximizing likelihood in the presence of latent variables.
-- **Gaussian Mixture Models (GMMs)**: model parameters are commonly fitted by maximizing data likelihood with Expectation-Maximization.
-- **Hidden Markov Models (HMMs)**: transition and emission probabilities are often learned through likelihood maximization.
-- **Probabilistic Principal Component Analysis and Factor Analysis**: both are built on explicit probabilistic models with likelihood-based fitting.
-- **Maximum A Posteriori (MAP) Estimation**: extends MLE by adding a prior, which links probabilistic estimation to L1 and L2 regularization.
-- **Deep Learning**: many standard losses are negative log-likelihoods under a chosen output distribution.
-- **Generative Models**: autoregressive models and normalizing flows optimize likelihood directly, while variational autoencoders optimize a tractable lower bound on the log-likelihood.
+- **Regression losses**: linear regression with Gaussian noise leads to mean squared error.
+- **Classification losses**: logistic regression and softmax classification lead to binary and categorical cross-entropy.
+- **Probabilistic models**: Naive Bayes, Gaussian Mixture Models, Hidden Markov Models, probabilistic PCA, and factor analysis all use likelihood-based fitting.
+- **Latent-variable models**: Expectation-Maximization (EM) maximizes likelihood when some variables are not directly observed.
+- **Regularized estimation**: Maximum A Posteriori (MAP) extends MLE by adding a prior, which links probabilistic estimation to L1 and L2 regularization.
+- **Deep learning and generative modeling**: many standard losses are negative log-likelihoods under a chosen output distribution, while models such as autoregressive models and normalizing flows optimize likelihood directly.
