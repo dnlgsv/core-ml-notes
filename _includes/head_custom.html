@@ -10,5 +10,41 @@
     }
   };
   </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  (function () {
+    var storageKey = 'coreMlNotesSidebarCollapsed';
+    if (localStorage.getItem(storageKey) === 'true') {
+      document.documentElement.classList.add('sidebar-collapsed-pending');
+    }
 
+    document.addEventListener('DOMContentLoaded', function () {
+      var collapsed = localStorage.getItem(storageKey) === 'true';
+      var button = document.createElement('button');
+      button.className = 'sidebar-toggle';
+      button.type = 'button';
+      button.setAttribute('aria-label', 'Toggle sidebar');
+      button.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+
+      function render() {
+        button.textContent = document.body.classList.contains('sidebar-collapsed') ? '☰' : '×';
+      }
+
+      if (collapsed) {
+        document.body.classList.add('sidebar-collapsed');
+      }
+      document.documentElement.classList.remove('sidebar-collapsed-pending');
+
+      render();
+      button.addEventListener('click', function () {
+        var isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+        document.documentElement.classList.remove('sidebar-collapsed-pending');
+        localStorage.setItem(storageKey, isCollapsed ? 'true' : 'false');
+        button.setAttribute('aria-pressed', isCollapsed ? 'true' : 'false');
+        render();
+      });
+
+      document.body.appendChild(button);
+    });
+  }());
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
