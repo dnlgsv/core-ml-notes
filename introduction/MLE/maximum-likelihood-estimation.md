@@ -58,15 +58,58 @@ This helps for two reasons:
 
 ## MLE for a coin: analytic derivation
 
-For one toss, encode heads as $x_i = 1$ and tails as $x_i = 0$. Under a Bernoulli model with probability of heads $\theta$, the probability of the observed result is
+Before writing a likelihood, we must choose a probabilistic model for the data. A coin toss has only two possible outcomes, so we encode each toss as a binary variable:
+
+$$
+x_i =
+\begin{cases}
+1, & \text{if toss } i \text{ is heads} \\
+0, & \text{if toss } i \text{ is tails}
+\end{cases}
+$$
+
+A distribution for one binary outcome is called a **Bernoulli distribution**. It has one parameter, $\theta$, which means the probability that the outcome is $1$:
+
+$$
+X_i \sim \operatorname{Bernoulli}(\theta)
+$$
+
+In the coin example, $X_i = 1$ means heads, so $\theta$ is the probability of heads. This is a modeling assumption: we are saying that each toss is represented as one Bernoulli random variable with the same unknown parameter $\theta$.
+
+Written out without shorthand, the model says:
+
+$$
+P(x_i = 1 \mid \theta) = \theta
+$$
+
+$$
+P(x_i = 0 \mid \theta) = 1-\theta
+$$
+
+The compact Bernoulli formula combines these two cases into one expression. The powers are used only as an on/off switch. Since $x_i$ is either $0$ or $1$:
+
+$$
+\theta^{x_i}(1-\theta)^{1-x_i}
+=
+\begin{cases}
+\theta^1(1-\theta)^0 = \theta, & x_i = 1 \\
+\theta^0(1-\theta)^1 = 1-\theta, & x_i = 0
+\end{cases}
+$$
+
+So the two cases can be written as one formula:
 
 $$
 P(x_i \mid \theta) = \theta^{x_i}(1-\theta)^{1-x_i}
 $$
 
-This compact formula gives $\theta$ when $x_i = 1$ and $1-\theta$ when $x_i = 0$.
+For a full observed sequence $\mathcal{D} = (x_1, \dots, x_n)$, we assume the tosses are independent and identically distributed:
 
-For a full observed sequence $\mathcal{D} = (x_1, \dots, x_n)$, independence gives
+$$
+X_1, \dots, X_n \overset{\text{iid}}{\sim} \operatorname{Bernoulli}(\theta)
+$$
+
+The same $\theta$ is used for every toss, and independence means that the probability of the whole sequence is the product of the probabilities of the individual tosses:
 
 $$
 \mathcal{L}(\theta)
@@ -74,13 +117,21 @@ $$
 = \prod_{i=1}^{n} \theta^{x_i}(1-\theta)^{1-x_i}
 $$
 
-If the sequence contains $k$ heads, then $\sum_i x_i = k$ and $\sum_i (1-x_i) = n-k$, so
+If the sequence contains $k$ heads, then the indicators satisfy
 
 $$
-\mathcal{L}(\theta) = \theta^k(1-\theta)^{n-k}
+\sum_{i=1}^{n} x_i = k
 $$
 
-To turn this likelihood into a log-likelihood, we use three logarithm facts.
+and the number of tails is
+
+$$
+\sum_{i=1}^{n} (1-x_i) = n-k
+$$
+
+We will use these two counts at the end of the derivation.
+
+To turn the product likelihood into a log-likelihood, we use three logarithm facts.
 
 First, $\log$ is strictly increasing on positive numbers, so it preserves the maximizer:
 
@@ -92,10 +143,11 @@ $$
 
 Therefore maximizing $\mathcal{L}(\theta)$ is equivalent to maximizing $\log \mathcal{L}(\theta)$.
 
-Second, products become sums:
+Second, a logarithm turns a product into a sum:
 
 $$
-\log(ab) = \log a + \log b
+\log\left(\prod_{i=1}^{n} a_i\right)
+= \sum_{i=1}^{n} \log a_i
 $$
 
 Third, powers become multipliers:
@@ -110,10 +162,22 @@ $$
 \begin{aligned}
 \ell(\theta)
 &= \log \mathcal{L}(\theta) \\
-&= \log\left(\theta^k(1-\theta)^{n-k}\right) \\
-&= \log(\theta^k) + \log\left((1-\theta)^{n-k}\right) \\
+&= \log\left(\prod_{i=1}^{n} \theta^{x_i}(1-\theta)^{1-x_i}\right) \\
+&= \sum_{i=1}^{n}\log\left(\theta^{x_i}(1-\theta)^{1-x_i}\right) \\
+&= \sum_{i=1}^{n}\left[\log(\theta^{x_i}) + \log\left((1-\theta)^{1-x_i}\right)\right] \\
+&= \sum_{i=1}^{n}\left[x_i\log\theta + (1-x_i)\log(1-\theta)\right] \\
+&= \left(\sum_{i=1}^{n}x_i\right)\log\theta
+ + \left(\sum_{i=1}^{n}(1-x_i)\right)\log(1-\theta) \\
 &= k \log \theta + (n-k) \log(1-\theta)
 \end{aligned}
+$$
+
+The powers $\theta^k$ and $(1-\theta)^{n-k}$ are the same counting written before taking the logarithm:
+
+$$
+\prod_{i=1}^{n} \theta^{x_i}(1-\theta)^{1-x_i}
+= \theta^{\sum_i x_i}(1-\theta)^{\sum_i(1-x_i)}
+= \theta^k(1-\theta)^{n-k}
 $$
 
 This is the log-likelihood of one particular sequence with $k$ heads and $n-k$ tails. If we instead ask for the probability of seeing exactly $k$ heads in any order, the likelihood includes the binomial coefficient $\binom{n}{k}$. That coefficient does not depend on $\theta$, so it does not affect which value of $\theta$ maximizes the likelihood.
