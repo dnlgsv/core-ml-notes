@@ -196,93 +196,123 @@ These are long-run guarantees. They explain why MLE is so widely used, but they 
 
 Use these questions to check whether the main ideas are clear before moving on.
 
-<details>
-<summary>1. What is the difference between probability and likelihood?</summary>
+<style>
+.qa-accordion { display: grid; gap: 10px; margin: 1rem 0 1.5rem; }
+.qa-card { border: 1px solid #d0d7de; border-radius: 8px; background: #fff; overflow: hidden; }
+.qa-question { width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 14px; border: 0; background: transparent; color: inherit; font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.qa-question::after { content: "+"; flex: 0 0 auto; font-weight: 600; }
+.qa-card.open .qa-question::after { content: "-"; }
+.qa-answer { display: none; padding: 0 14px 14px; color: var(--color-text-secondary); }
+.qa-answer p { margin: 0; }
+.qa-card.open .qa-answer { display: block; }
+@media (prefers-color-scheme: dark) {
+  .qa-card { background: var(--color-background-secondary); border-color: var(--color-border-tertiary); }
+}
+</style>
 
-Probability treats the parameters as fixed and asks how likely different data outcomes are. Likelihood treats the observed data as fixed and asks which parameter values make those data most plausible.
-</details>
-
-<details>
-<summary>2. Why does MLE for a coin give $\hat{\theta} = k/n$?</summary>
-
-The likelihood is maximized when the model's predicted probability of heads matches the observed fraction of heads. Differentiating the Bernoulli log-likelihood gives $k/\theta - (n-k)/(1-\theta) = 0$, which solves to $\hat{\theta} = k/n$.
-</details>
-
-<details>
-<summary>3. Why can we maximize log-likelihood instead of likelihood?</summary>
-
-The logarithm is monotonic, so it does not change the location of the maximum. It also turns products into sums, which are easier to compute, differentiate, and optimize.
-</details>
-
-<details>
-<summary>4. Why is negative log-likelihood used as a loss?</summary>
-
-Optimization libraries usually minimize objectives. MLE is a maximization problem, so we multiply the log-likelihood by $-1$ and minimize the negative log-likelihood instead.
-</details>
-
-<details>
-<summary>5. Why does Gaussian MLE lead to mean squared error?</summary>
-
-Under Gaussian noise with fixed variance, the log-likelihood contains a negative squared-error term. Maximizing that log-likelihood is therefore equivalent to minimizing the sum of squared errors.
-</details>
-
-<details>
-<summary>6. Why does the MLE variance use $1/n$ instead of $1/(n-1)$?</summary>
-
-MLE chooses the parameter that maximizes likelihood, not the estimator with zero finite-sample bias. The $1/(n-1)$ version is the unbiased sample variance, which optimizes a different criterion.
-</details>
+<div class="qa-accordion">
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What is the difference between probability and likelihood?</button>
+    <div class="qa-answer">
+      <p>Probability treats the parameters as fixed and asks how likely different data outcomes are. Likelihood treats the observed data as fixed and asks which parameter values make those data most plausible.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why does MLE for a coin give \(\hat{\theta} = k/n\)?</button>
+    <div class="qa-answer">
+      <p>The likelihood is maximized when the model's predicted probability of heads matches the observed fraction of heads. Differentiating the Bernoulli log-likelihood gives \(k/\theta - (n-k)/(1-\theta) = 0\), which solves to \(\hat{\theta} = k/n\).</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why can we maximize log-likelihood instead of likelihood?</button>
+    <div class="qa-answer">
+      <p>The logarithm is monotonic, so it does not change the location of the maximum. It also turns products into sums, which are easier to compute, differentiate, and optimize.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why is negative log-likelihood used as a loss?</button>
+    <div class="qa-answer">
+      <p>Optimization libraries usually minimize objectives. MLE is a maximization problem, so we multiply the log-likelihood by \(-1\) and minimize the negative log-likelihood instead.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why does Gaussian MLE lead to mean squared error?</button>
+    <div class="qa-answer">
+      <p>Under Gaussian noise with fixed variance, the log-likelihood contains a negative squared-error term. Maximizing that log-likelihood is therefore equivalent to minimizing the sum of squared errors.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why does the MLE variance use \(1/n\) instead of \(1/(n-1)\)?</button>
+    <div class="qa-answer">
+      <p>MLE chooses the parameter that maximizes likelihood, not the estimator with zero finite-sample bias. The \(1/(n-1)\) version is the unbiased sample variance, which optimizes a different criterion.</p>
+    </div>
+  </div>
+</div>
 
 ## Common interview questions
 
 These are the versions of MLE questions that often appear in machine learning and statistics interviews.
 
-<details>
-<summary>1. What assumptions are usually made when writing the likelihood as a product?</summary>
+<div class="qa-accordion">
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What assumptions are usually made when writing the likelihood as a product?</button>
+    <div class="qa-answer">
+      <p>The standard assumption is that observations are independent, often independent and identically distributed (i.i.d.). Independence lets us write the joint likelihood as \(\prod_i P(x_i \mid \theta)\).</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Is likelihood a probability distribution over parameters?</button>
+    <div class="qa-answer">
+      <p>No. In frequentist MLE, the likelihood is a function of the parameter, but it is not a probability distribution over the parameter. To put a probability distribution over parameters, we need a Bayesian prior and posterior.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What is the difference between MLE and MAP?</button>
+    <div class="qa-answer">
+      <p>MLE maximizes \(P(\mathcal{D} \mid \theta)\). MAP maximizes \(P(\theta \mid \mathcal{D})\), which is proportional to \(P(\mathcal{D} \mid \theta)P(\theta)\). MAP adds a prior, and that prior often acts like regularization.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why is cross-entropy the loss for logistic regression?</button>
+    <div class="qa-answer">
+      <p>Logistic regression models labels as Bernoulli random variables. The negative Bernoulli log-likelihood is exactly binary cross-entropy.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why is MSE connected to Gaussian noise?</button>
+    <div class="qa-answer">
+      <p>If the target is modeled as \(y_i = f(x_i) + \varepsilon_i\) with \(\varepsilon_i \sim \mathcal{N}(0,\sigma^2)\), the Gaussian negative log-likelihood is proportional to the sum of squared residuals, plus constants.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What can go wrong with MLE?</button>
+    <div class="qa-answer">
+      <p>MLE can be biased in small samples, sensitive to outliers, and unstable when the model is misspecified. In some models, the likelihood may also be unbounded or have multiple local maxima.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">Why do we often minimize average negative log-likelihood instead of total negative log-likelihood?</button>
+    <div class="qa-answer">
+      <p>Averaging by \(n\) does not change the minimizer, but it makes the scale of the loss less dependent on dataset size. This is useful for reporting, comparing runs, and choosing learning rates.</p>
+    </div>
+  </div>
+  <div class="qa-card">
+    <button class="qa-question" type="button" aria-expanded="false">What does it mean if two parameter values have similar likelihood?</button>
+    <div class="qa-answer">
+      <p>It means the observed data do not strongly distinguish between those parameter values. With more informative data, the likelihood curve usually becomes sharper around the best estimate.</p>
+    </div>
+  </div>
+</div>
 
-The standard assumption is that observations are independent, often independent and identically distributed (i.i.d.). Independence lets us write the joint likelihood as $\prod_i P(x_i \mid \theta)$.
-</details>
-
-<details>
-<summary>2. Is likelihood a probability distribution over parameters?</summary>
-
-No. In frequentist MLE, the likelihood is a function of the parameter, but it is not a probability distribution over the parameter. To put a probability distribution over parameters, we need a Bayesian prior and posterior.
-</details>
-
-<details>
-<summary>3. What is the difference between MLE and MAP?</summary>
-
-MLE maximizes $P(\mathcal{D} \mid \theta)$. MAP maximizes $P(\theta \mid \mathcal{D})$, which is proportional to $P(\mathcal{D} \mid \theta)P(\theta)$. MAP adds a prior, and that prior often acts like regularization.
-</details>
-
-<details>
-<summary>4. Why is cross-entropy the loss for logistic regression?</summary>
-
-Logistic regression models labels as Bernoulli random variables. The negative Bernoulli log-likelihood is exactly binary cross-entropy.
-</details>
-
-<details>
-<summary>5. Why is MSE connected to Gaussian noise?</summary>
-
-If the target is modeled as $y_i = f(x_i) + \varepsilon_i$ with $\varepsilon_i \sim \mathcal{N}(0,\sigma^2)$, the Gaussian negative log-likelihood is proportional to the sum of squared residuals, plus constants.
-</details>
-
-<details>
-<summary>6. What can go wrong with MLE?</summary>
-
-MLE can be biased in small samples, sensitive to outliers, and unstable when the model is misspecified. In some models, the likelihood may also be unbounded or have multiple local maxima.
-</details>
-
-<details>
-<summary>7. Why do we often minimize average negative log-likelihood instead of total negative log-likelihood?</summary>
-
-Averaging by $n$ does not change the minimizer, but it makes the scale of the loss less dependent on dataset size. This is useful for reporting, comparing runs, and choosing learning rates.
-</details>
-
-<details>
-<summary>8. What does it mean if two parameter values have similar likelihood?</summary>
-
-It means the observed data do not strongly distinguish between those parameter values. With more informative data, the likelihood curve usually becomes sharper around the best estimate.
-</details>
+<script>
+document.querySelectorAll('.qa-question').forEach((button) => {
+  button.addEventListener('click', () => {
+    const card = button.closest('.qa-card');
+    const isOpen = card.classList.toggle('open');
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+});
+</script>
 
 ## Where these ideas reappear
 
